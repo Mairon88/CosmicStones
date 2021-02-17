@@ -3,6 +3,8 @@ import sys
 import pygame.event as GAME_EVENTS
 import pygame.locals as GAME_GLOBALS
 import draw.text as pt
+import draw.characters as char
+import logic.functions as func
 
 
 # INICJALIZACJA PYGAME
@@ -21,17 +23,10 @@ pygame.display.set_caption(' o o FIVE o STONES o o ')   # Nazwa wyświtlana w ra
 
 # GŁÓWNE ZMIENNE
 number_of_players = 0  # Liczba graczy
-word = ''
 list_of_players = []
-enter_name = 0
 all_names_ok = False
 game_over = False
-player = 0
-
-# WYŚWIETLANIE TEKSTU
-
-
-
+confirm_name = 0
 
 
 # GŁOWNE EKRANY GRY
@@ -50,70 +45,49 @@ while True:
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_RETURN:
-                if current_view == list_view[0]:
+                if current_view == "start_view":
                     current_view = list_view[1]
-                    print("Prześlismy do liczby graczy")
-                elif current_view == list_view[1]:
+                elif current_view == "number_of_players_view" and number_of_players in [2, 3, 4]:
                     current_view = list_view[2]
-                    print("Prześlismy do imion graczy")
-                elif current_view == list_view[2]:
-                    current_view = list_view[3]
-                    print("Prześlismy do gry")
-                elif current_view == list_view[3]:
+                elif current_view == "player_names_view":
+                    func.enter_player_names(confirm_name,list_of_players)
+                    confirm_name += 1
+                    char.word = ''
+                    if confirm_name == 4:
+                        current_view = list_view[3]
+                        confirm_name = 0
+                elif current_view == "game_view":
                     current_view = list_view[4]
-                    print("Prześlismy podsumowania gry")
-                elif current_view == list_view[4]:
+                elif current_view == "result_view":
                     current_view = list_view[3]
-                    print("Prześlismy do gry")
 
             if event.key == pygame.K_BACKSPACE:
-                if current_view == list_view[4]:
+                if current_view == "result_view":
                     current_view = list_view[1]
-                    print("Prześlismy do liczby graczy")
+
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+
         if event.type == GAME_GLOBALS.QUIT:
             sys.exit()
 
+        # Jeśli spełniony jest warunek to mozemy podać liczbe graczy i zapisąć ta liczbe do zmiennej
+        if current_view == list_view[1]:
+            char.characters(event, 'num_of_players')
 
-    pt.show_text(window, width, height, myfont, current_view) # WYŚWIETLANIE TEKSTÓW NA EKRANIE
+        # Jeśli spełniony jest warunek to mozemy podać imiona graczy i je zapisać
+        if current_view == list_view[2]:
+            char.characters(event, 'player_names')
 
-    #         if player_names_view and len(list_of_players) >= number_of_players:
-    #             char.characters(event, 'text')
-    #             if event.key == pygame.K_RETURN and enter_name < len(list_of_players):
-    #                 list_of_players[enter_name].name = char.word
-    #                 char.word = ''
-    #                 enter_name += 1
-    #
 
-    #
-    #     if number_of_players_view:
-    #         char.characters(event, 'num_of_players')
-    #
-    #
-    # elif number_of_players_view:
+    # WYŚWIETLANIE TEKSTÓW NA EKRANIE
+    pt.show_text(window, width, height, myfont, current_view, number_of_players)
 
-    #
-    #     number_of_players = char.num    # Przypisanie do zmiennej num ilosci graczy na za pomoca funkcji characters
-    #     show_num = myfont.render(str(number_of_players), True, (250, 255, 255))
-    #     window.blit(show_num, ((width/2), (height/2+50)))
-    #
-    # elif player_names_view:
-    #     if len(list_of_players) < number_of_players:
-    #         for i in range(number_of_players):
-    #             list_of_players.append(Player('No_name'))
-    #
-    #     elif len(list_of_players) >= number_of_players:
-    #         for i in list_of_players:
-    #             pass
-    #
-    # player_name = 'PODAJ IMIE DLA GRACZA {}'.format(enter_name + 1)  # Tytył gry
-    # player_name_text_width, player_name_text_height = myfont.size(
-    #     player_name)  # Określenie szerokości i wysokości tekstu w pikselach
-    # player_name_x_y = (width / 2) - (player_name_text_width / 2), (
-    #             height / 2 - (player_name_text_height / 2))  # Położenie tekstu na ekranie
-    # ply_names = myfont.render(player_name.upper(), True, (250, 255, 255))
-    # window.blit(ply_names, player_name_x_y)
+    # ZAPISANIE ILOŚCI GRACZY DO ZMIENNEJ
+    number_of_players = func.enter_num_of_pl()
+
+    # TWORZENIE GRACZY
+    func.create_players(current_view, number_of_players, list_of_players)
 
     pygame.display.update()
