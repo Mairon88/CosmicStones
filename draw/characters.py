@@ -1,6 +1,6 @@
 import pygame
 
-word = ''
+word = 'gracz 1'
 num = ''
 
 def characters(event, option):
@@ -55,6 +55,8 @@ def characters(event, option):
                 word += "x"
             if event.key == pygame.K_y:
                 word += "y"
+            if event.key == pygame.K_u:
+                word += "u"
             if event.key == pygame.K_v:
                 word += "v"
             if event.key == pygame.K_0:

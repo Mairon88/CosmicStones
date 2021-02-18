@@ -3,7 +3,7 @@ import sys
 import pygame.event as GAME_EVENTS
 import draw.characters as char
 
-def show_text(window, width, height, myfont,current_view, number_of_players):
+def show_text(window, width, height, myfont,current_view, number_of_players, confirm):
     if current_view == 'start_view':
         text = 'FIVE STONES'  # Tytył gry
         text_width, text_height = myfont.size(text)  # Określenie szerokości i wysokości tekstu w pikselach
@@ -28,8 +28,9 @@ def show_text(window, width, height, myfont,current_view, number_of_players):
         text_x_y = (width / 2 - (text_width / 2), height / 2 - (text_height / 2))  # Położenie tekstu na ekranie
         game_name = myfont.render(text.upper(), True, (250, 255, 255))
         window.blit(game_name, text_x_y)
-        show_name = myfont.render(str(char.word), True, (250, 255, 255))
-        window.blit(show_name, ((width / 2), (height / 2 + 50)))
+        player_name = "Gracz nr "+str(confirm+1)+" : "+char.word
+        show_name = myfont.render(str(player_name).upper(), True, (250, 255, 255))
+        window.blit(show_name, ((width / 2 - 250), (height / 2 + 50)))
 
 
     elif current_view == 'game_view':
