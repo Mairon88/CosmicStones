@@ -4,21 +4,27 @@ import game_elements.stone_markers as mrk
 import game_elements.aristocrat_cards as aric
 import random
 
+
+# FUNKCJA DO PODAWANIA ILOSCI GRACZY
 def enter_num_of_pl():
     number_of_players = char.num
     return number_of_players
 
-def create_players(current_view, number_of_players, list_of_players):
-    if current_view == "player_names_view" and number_of_players is not None:
+
+# FUNKCJA TWORZACA OBIEKTY GRACZY
+def create_players(number_of_players, list_of_players):
+    if number_of_players is not None:
         if len(list_of_players) < number_of_players:
             for i in range(number_of_players):
                 list_of_players.append(plr.Player("No_Name"))
 
+
+# FUNKCJA DO PODAWANIA IMION GRACZY
 def enter_player_names(confirm_name, list_of_players):
-    if char.word is str:
-        list_of_players[confirm_name].name = 'sdfsdf'
     list_of_players[confirm_name].name = char.word
 
+
+# FUNKCJA TWORZACA ZNACZNIKI
 def create_markers(prepare_markers, num_of_players):
     markers = []
     if num_of_players == 4:
@@ -35,6 +41,7 @@ def create_markers(prepare_markers, num_of_players):
     return markers
 
 
+# FUNKCJA TWORZACA KARTY ARYSTOKRATÓW
 def create_aristo(prepare_aristo, num_of_players):
     aristo = []
     if num_of_players == 4:
@@ -44,8 +51,11 @@ def create_aristo(prepare_aristo, num_of_players):
     else:
         n = 3
 
+    # LOSOWANIE KILKU KART ARYSTOKRATOW ZGODNIE Z LICZBA GRACZ
     cards = random.sample(prepare_aristo, k=n)
-    print(cards)
+
+    # TWORZENIE OBIEKTOW KART ARYSTOKRATOW
     for card in cards:
         aristo.append(aric.Aristo(card[0], card[1]))
+
     return aristo
