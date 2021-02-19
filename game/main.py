@@ -6,6 +6,9 @@ import draw.text as pt
 import draw.characters as char
 import logic.functions as func
 import game_elements.data_to_prepare_elements as pele
+import game_elements.data_to_prepare_elements as datp
+import game_elements.stone_cards as stc
+import random
 
 
 # INICJALIZACJA PYGAME
@@ -35,6 +38,11 @@ markers = []
 
 # LISTA UTWORZONYCH KART ARYSTOKRATÓW
 aristo_card = []
+
+# LISTY UTWORZONYCH KART KAMIENI
+card_lvl_1 = []
+card_lvl_2 = []
+card_lvl_3 = []
 
 # GŁOWNE EKRANY GRY
 list_view = ['start_view', 'number_of_players_view', 'player_names_view', 'game_view', 'result_view']
@@ -121,6 +129,23 @@ while True:
         if prepare_game_elements:
             markers = func.create_markers(pele.prepare_markers, number_of_players)
             aristo_card = func.create_aristo(pele.prepare_aristo_card, number_of_players)
+
+            for cards in datp.list_cards_lvl_3:
+                for card in cards:
+                    card_lvl_3.append(stc.Stone_Card(card[0], card[1], card[2]))
+
+            for cards in datp.list_cards_lvl_2:
+                for card in cards:
+                    card_lvl_2.append(stc.Stone_Card(card[0], card[1], card[2]))
+
+            for cards in datp.list_cards_lvl_1:
+                for card in cards:
+                    card_lvl_1.append(stc.Stone_Card(card[0], card[1], card[2]))
+
+            for i in range(3):
+                random.shuffle(card_lvl_1)
+                random.shuffle(card_lvl_2)
+                random.shuffle(card_lvl_3)
 
             prepare_game_elements = False
 
