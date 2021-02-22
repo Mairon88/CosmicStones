@@ -5,7 +5,7 @@ import draw.characters as char
 
 def show_text(window, width, height, myfont,current_view, number_of_players, confirm):
     if current_view == 'start_view':
-        text = 'FIVE STONES'  # Tytył gry
+        text = 'COSMIC STONES'  # Tytył gry
         text_width, text_height = myfont.size(text)  # Określenie szerokości i wysokości tekstu w pikselach
         text_x_y = (width / 2 - (text_width / 2), height / 2 - (text_height / 2))  # Położenie tekstu na ekranie
         game_name = myfont.render(text.upper(), True, (250, 255, 255))

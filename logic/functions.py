@@ -59,3 +59,20 @@ def create_aristo(prepare_aristo, num_of_players):
         aristo.append(aric.Aristo(card[0], card[1]))
 
     return aristo
+
+# FUNKCJA WYZNACZAJĄCA WSPÓŁRZĘDNE DLA KART - PRZYDA SIE W RYSOWANIU I W WARUNKACH PRZY
+# KLIKANIU MYSZKĄ
+# LICZBY PRZEZ KTÓRE SĄ MNOŻONE SZEROKOŚCI I WYSOKOSCI TO PROCENTOWE POZYCJE LUB WYMIARY
+
+def card_coordinates(width, height, card_a_height_size, card_width_size, card_height_size, padding_x, padding_y, ilosc, level, element):
+    coordinates_list = []
+    if element == 'card':
+        for i in range(ilosc):
+            coordinates_list.append((width * 0.2711 + padding_x, height*0.0408+card_a_height_size + level*padding_y+(level-1)*card_height_size, card_width_size, card_height_size))  # P1 AREA
+            padding_x += card_width_size/2 + width * 0.056
+    elif element == 'marker':
+        for i in range(ilosc):
+            coordinates_list.append((width * 0.2711 +height*0.06+ padding_x, height*0.0408+card_a_height_size + level*padding_y+(level-1)*card_height_size + height * 0.075))  # P1 AREA
+            padding_x += card_width_size/2 + width * 0.039
+    return coordinates_list
+

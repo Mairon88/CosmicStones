@@ -3,6 +3,7 @@ import sys
 import pygame.event as GAME_EVENTS
 import pygame.locals as GAME_GLOBALS
 import draw.text as pt
+import draw.board as db
 import draw.characters as char
 import logic.functions as func
 import game_elements.data_to_prepare_elements as pele
@@ -20,10 +21,10 @@ myfont = pygame.font.SysFont('ARIAL', 40)   #Wczytanie czcionki
 
 # TWORZENIE OKNA GRY
 infoObject = pygame.display.Info()  # informacje o wymiarach ekranu
-width = infoObject.current_w-200    # wymiary potrzbne dla okna gry
-height = infoObject.current_h-200   # wymiary potrzbne dla okna gry
+width = infoObject.current_w-150    # wymiary potrzbne dla okna gry
+height = infoObject.current_h-100   # wymiary potrzbne dla okna gry
 window = pygame.display.set_mode((width, height), pygame.SCALED)    # Utworzenie okna o podanych wymiarach
-pygame.display.set_caption(' o o FIVE o STONES o o ')   # Nazwa wyświtlana w ramce okna gry
+pygame.display.set_caption(' o o COSMIC o STONES o o ')   # Nazwa wyświtlana w ramce okna gry
 
 # GŁÓWNE ZMIENNE
 number_of_players = 2  # Liczba graczy
@@ -31,7 +32,6 @@ list_of_players = []
 game_over = True
 confirm_name = 0
 prepare_game_elements = True
-
 
 # LISTA UTWORZONYCH OBIEKTÓW Z ZNACZNIKAMI
 markers = []
@@ -43,6 +43,31 @@ aristo_card = []
 card_lvl_1 = []
 card_lvl_2 = []
 card_lvl_3 = []
+
+# LISTY KART KAMIENI AKTUALNIE WYŁOŻONYCH NA STOLE
+line_lvl1 = [[],[],[],[]]
+line_lvl2 = [[],[],[],[]]
+line_lvl3 = [[],[],[],[]]
+
+# WYMIARY KART KAMIENI
+card_s_width_size = width * 0.075
+card_s_height_size = height * 0.18
+
+# WYMIARY KART ARYSTOKRATÓW
+card_a_width_size = width * 0.075
+card_a_height_size = height * 0.1355
+
+# ODSTĘP MIĘDZY KARTAMI
+padding_x = width * 0.005
+padding_y = height * 0.02
+
+# WSPÓŁRZĘDNE KART
+coordinates_a_card = []
+coordinates_card_lvl_1 = []
+coordinates_card_lvl_2 = []
+coordinates_card_lvl_3 = []
+
+coordinates_marker = []
 
 # GŁOWNE EKRANY GRY
 list_view = ['start_view', 'number_of_players_view', 'player_names_view', 'game_view', 'result_view']
@@ -142,11 +167,32 @@ while True:
                 for card in cards:
                     card_lvl_1.append(stc.Stone_Card(card[0], card[1], card[2]))
 
+            # POTASOWANIE KART KAMIENI
             for i in range(3):
                 random.shuffle(card_lvl_1)
                 random.shuffle(card_lvl_2)
                 random.shuffle(card_lvl_3)
 
+            # UTWORZENIE WSPÓŁRZĘDNYCH KART I ZNACZNIKÓW
+            coordinates_a_card = func.card_coordinates(width, height, 0, card_a_width_size,
+                                                           card_a_height_size, padding_x, 0, len(aristo_card), 1, 'card')
+            coordinates_card_lvl_1 = func.card_coordinates(width, height, card_a_height_size, card_s_width_size,
+                                                           card_s_height_size, padding_x, padding_y, 5, 3, 'card')
+            coordinates_card_lvl_2 = func.card_coordinates(width, height, card_a_height_size, card_s_width_size,
+                                                           card_s_height_size, padding_x, padding_y, 5, 2, 'card')
+            coordinates_card_lvl_3 = func.card_coordinates(width, height, card_a_height_size, card_s_width_size,
+                                                           card_s_height_size, padding_x, padding_y, 5, 1, 'card')
+            coordinates_marker = func.card_coordinates(width, height, card_a_height_size, card_s_width_size,
+                                                           card_s_height_size, padding_x, padding_y, 6, 4, 'marker')
             prepare_game_elements = False
+
+    # WYŚWIETLANIE KART
+    db.draw_cards_markers(window, coordinates_a_card,0,'card')
+    db.draw_cards_markers(window, coordinates_card_lvl_1,0, 'card')
+    db.draw_cards_markers(window, coordinates_card_lvl_2,0, 'card')
+    db.draw_cards_markers(window, coordinates_card_lvl_3,0, 'card')
+    db.draw_cards_markers(window, coordinates_marker, height, 'marker')
+
+
 
     pygame.display.update()
