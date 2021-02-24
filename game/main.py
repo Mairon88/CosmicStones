@@ -28,10 +28,10 @@ pygame.display.set_caption(' o o COSMIC o STONES o o ')   # Nazwa wyświtlana w 
 
 # GŁÓWNE ZMIENNE
 number_of_players = 2  # Liczba graczy
-list_of_players = []
+list_of_players = [] # Lista przechowująca obiekty graczy
 game_over = True
-confirm_name = 0
-prepare_game_elements = True
+confirm_name = 0 # Zmienna pomocnicza do potwierdzenia wprowadzenia imienia gracza
+prepare_game_elements = True    # Zmienna to przygotowania elementów
 
 # LISTA UTWORZONYCH OBIEKTÓW Z ZNACZNIKAMI
 markers = []
@@ -53,6 +53,9 @@ line_lvl3 = [[],[],[],[]]
 card_s_width_size = width * 0.075
 card_s_height_size = height * 0.18
 
+#WYMIAR ZNACZNIKÓW
+marker_size = height * 0.0612
+
 # WYMIARY KART ARYSTOKRATÓW
 card_a_width_size = width * 0.075
 card_a_height_size = height * 0.1355
@@ -61,7 +64,7 @@ card_a_height_size = height * 0.1355
 padding_x = width * 0.005
 padding_y = height * 0.02
 
-# WSPÓŁRZĘDNE KART
+# WSPÓŁRZĘDNE KART NA EKRANIE
 coordinates_a_card = []
 coordinates_card_lvl_1 = []
 coordinates_card_lvl_2 = []
@@ -81,18 +84,23 @@ while True:
     # OBŁSUGA ZDARZEŃ
     # np.wyjście z gry i przejście miedzy ekranami
 
+    # PĘTLA ZDARZEŃ
     for event in GAME_EVENTS.get():
 
+        # ZDANIERZA ZWIAZANE Z PRZYCIŚNIECIEM KLAWICZA NA KLAWIATRZUE
         if event.type == pygame.KEYDOWN:
 
+            # WCIŚNIECIE KLAWISZA ENTER
             if event.key == pygame.K_RETURN:
 
+                # PRZY WIDOCZNYM EKRANIE STARTOWYM WCIŚNIECIE KLAWISZAA ENTER SPOWODUJE PRZEJSCIE DO KOLEJNEGO WIDOKU
                 if current_view == "start_view":
                     current_view = list_view[1]
 
+                # JESLI ZOSTANIE WYBRANA ILOSC GRACZY TO WCISNIECIE ENTERU SPOWODUJE PRZEJSCIE DO KOLEJNEGO WIDOKU
                 elif current_view == "number_of_players_view" and number_of_players in [2, 3, 4]:
                     current_view = list_view[2]
-                    list_of_players = []
+                    list_of_players = []    # ZRESETOWANIE LISTY GRACZY
 
                 elif current_view == "player_names_view":
 
@@ -110,6 +118,7 @@ while True:
                     prepare_game_elements = True
                     char.word = "gracz 1"
 
+                # PO ZAKOŃCZENIU GRY I WIDOKU WYNIKÓW PO WCIŚNiECIUE ENTER GRA ROZPOCZNIE SIE PONOWNIE
                 elif current_view == "result_view":
                     current_view = list_view[3]
 
@@ -135,6 +144,19 @@ while True:
         if current_view == list_view[2]:
             char.characters(event, 'player_names')
 
+        # PRZYCIŚNIECIE I ZWOLNIENIE PRZYCISKU MYSZY SPOWODUJE DALSZE DZIAŁANIA
+        if event.type == pygame.MOUSEBUTTONUP:
+            if current_view == 'game_view':
+                mouse_pos = pygame.mouse.get_pos()
+                updated_cards_after_choose = func.choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2,
+                                                              coordinates_card_lvl_3, line_lvl1, line_lvl2,
+                                                              line_lvl3,
+                                                              mouse_pos)
+                (line_lvl1, line_lvl2, line_lvl3) = updated_cards_after_choose
+                func.choose_marker(markers, coordinates_marker, mouse_pos, marker_size)
+                for i in markers:
+                    print(i.name, i.quantity)
+
 
     # WYŚWIETLANIE TEKSTÓW NA EKRANIE
     pt.show_text(window, width, height, myfont, current_view, number_of_players, confirm_name)
@@ -157,15 +179,15 @@ while True:
 
             for cards in datp.list_cards_lvl_3:
                 for card in cards:
-                    card_lvl_3.append(stc.Stone_Card(card[0], card[1], card[2]))
+                    card_lvl_3.append(stc.Stone_Card(card[0], card[1], card[2], card[3]))
 
             for cards in datp.list_cards_lvl_2:
                 for card in cards:
-                    card_lvl_2.append(stc.Stone_Card(card[0], card[1], card[2]))
+                    card_lvl_2.append(stc.Stone_Card(card[0], card[1], card[2], card[3]))
 
             for cards in datp.list_cards_lvl_1:
                 for card in cards:
-                    card_lvl_1.append(stc.Stone_Card(card[0], card[1], card[2]))
+                    card_lvl_1.append(stc.Stone_Card(card[0], card[1], card[2], card[3]))
 
             # POTASOWANIE KART KAMIENI
             for i in range(3):
@@ -184,15 +206,21 @@ while True:
                                                            card_s_height_size, padding_x, padding_y, 5, 1, 'card')
             coordinates_marker = func.card_coordinates(width, height, card_a_height_size, card_s_width_size,
                                                            card_s_height_size, padding_x, padding_y, 6, 4, 'marker')
+
             prepare_game_elements = False
 
-    # WYŚWIETLANIE KART
-    db.draw_cards_markers(window, coordinates_a_card,0,'card')
-    db.draw_cards_markers(window, coordinates_card_lvl_1,0, 'card')
-    db.draw_cards_markers(window, coordinates_card_lvl_2,0, 'card')
-    db.draw_cards_markers(window, coordinates_card_lvl_3,0, 'card')
-    db.draw_cards_markers(window, coordinates_marker, height, 'marker')
+        # POBIERANIE KART Z STOSU I UZUPEŁNIANIE NA STOLE JEŚLI KTÓREJŚ BRAKUJE
+        update_cards = func.place_the_card(card_lvl_1, card_lvl_2, card_lvl_3, line_lvl1, line_lvl2, line_lvl3)
+        (card_lvl_1, card_lvl_2, card_lvl_3, line_lvl1, line_lvl2, line_lvl3) = update_cards
 
+        #WYBÓR KARTY Z STOŁU PRZEZ GRACZA JEŚLI SPEŁNIONĄ SĄ WSZYSTKIE WARUNKI
+
+        # WYŚWIETLANIE KART
+        db.draw_cards_markers(window, coordinates_a_card,0,'card')
+        db.draw_cards_markers(window, coordinates_card_lvl_1,0, 'card')
+        db.draw_cards_markers(window, coordinates_card_lvl_2,0, 'card')
+        db.draw_cards_markers(window, coordinates_card_lvl_3,0, 'card')
+        db.draw_cards_markers(window, coordinates_marker, height, 'marker', marker_size)
 
 
     pygame.display.update()
