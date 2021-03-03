@@ -29,9 +29,14 @@ pygame.display.set_caption(' o o COSMIC o STONES o o ')   # Nazwa wyświtlana w 
 # GŁÓWNE ZMIENNE
 number_of_players = 2  # Liczba graczy
 list_of_players = [] # Lista przechowująca obiekty graczy
-game_over = True
+game_over = False
+game_run = True
 confirm_name = 0 # Zmienna pomocnicza do potwierdzenia wprowadzenia imienia gracza
 prepare_game_elements = True    # Zmienna to przygotowania elementów
+player_turn = 0
+change_player = False
+action = ['take_3_markers','take_2_markers','reserve_a_card','buy_a_card']
+selected_action = ''
 
 # LISTA UTWORZONYCH OBIEKTÓW Z ZNACZNIKAMI
 markers = []
@@ -70,6 +75,10 @@ coordinates_card_lvl_1 = []
 coordinates_card_lvl_2 = []
 coordinates_card_lvl_3 = []
 
+# WSPÓŁRZĘDNE PRZYCISKÓW NA EKRANIE
+coordinates_buttons = []
+
+# WSPÓŁRZĘDNE ZNACZNIKÓW NA EKRANIE
 coordinates_marker = []
 
 # GŁOWNE EKRANY GRY
@@ -113,20 +122,25 @@ while True:
                             current_view = list_view[3]
                             confirm_name = 0
 
-                elif current_view == "game_view" and game_over:
+                elif current_view == "game_view" and game_run:
+                    player_turn = func.player_turn(list_of_players, player_turn)
+
+                elif current_view == "game_view" and game_over and game_run == False:
                     current_view = list_view[4]
                     prepare_game_elements = True
                     char.word = "gracz 1"
 
-                # PO ZAKOŃCZENIU GRY I WIDOKU WYNIKÓW PO WCIŚNiECIUE ENTER GRA ROZPOCZNIE SIE PONOWNIE
+                # PO ZAKOŃCZENIU GRY I WIDOKU WYNIKÓW PO WCIŚNiECIU ENTER GRA ROZPOCZNIE SIE PONOWNIE
                 elif current_view == "result_view":
                     current_view = list_view[3]
+                    player_turn = 0
 
             # PO ZAKOŃCZENIU GRY POWRÓT DO WYBORU ILOSCI GRACZY
             if event.key == pygame.K_BACKSPACE:
                 if current_view == "result_view":
                     current_view = list_view[1]
                     confirm_name = 0
+                    player_turn = 0
 
             # ZAMKNIĘCIE PROGRAMU
             if event.key == pygame.K_ESCAPE:
@@ -154,12 +168,15 @@ while True:
                                                               mouse_pos)
                 (line_lvl1, line_lvl2, line_lvl3) = updated_cards_after_choose
                 func.choose_marker(markers, coordinates_marker, mouse_pos, marker_size)
-                for i in markers:
-                    print(i.name, i.quantity)
+                func.choose_button(coordinates_buttons, action, mouse_pos)
+                # for i in markers:
+                #     print(i.name, i.quantity)
+
 
 
     # WYŚWIETLANIE TEKSTÓW NA EKRANIE
-    pt.show_text(window, width, height, myfont, current_view, number_of_players, confirm_name)
+    pt.show_text(window, width, height, myfont, current_view, number_of_players, confirm_name, player_turn,
+                 list_of_players)
 
     # ZAPISANIE ILOŚCI GRACZY DO ZMIENNEJ
     if current_view == "number_of_players_view":
@@ -207,6 +224,8 @@ while True:
             coordinates_marker = func.card_coordinates(width, height, card_a_height_size, card_s_width_size,
                                                            card_s_height_size, padding_x, padding_y, 6, 4, 'marker')
 
+            coordinates_buttons = func.button_coordinates(width, height, card_a_height_size, card_s_width_size, padding_x)
+
             prepare_game_elements = False
 
         # POBIERANIE KART Z STOSU I UZUPEŁNIANIE NA STOLE JEŚLI KTÓREJŚ BRAKUJE
@@ -222,5 +241,7 @@ while True:
         db.draw_cards_markers(window, coordinates_card_lvl_3,0, 'card')
         db.draw_cards_markers(window, coordinates_marker, height, 'marker', marker_size)
 
+        # WYŚWIWETLANIE PRZYCISKÓW
+        db.draw_buttons(window, coordinates_buttons)
 
     pygame.display.update()

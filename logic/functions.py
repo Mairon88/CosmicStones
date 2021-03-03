@@ -3,6 +3,7 @@ import game_elements.player as plr
 import game_elements.stone_markers as mrk
 import game_elements.aristocrat_cards as aric
 import random
+import time
 
 
 # FUNKCJA DO PODAWANIA ILOSCI GRACZY
@@ -64,17 +65,27 @@ def create_aristo(prepare_aristo, num_of_players):
 # LICZBY PRZEZ KTÓRE SĄ MNOŻONE SZEROKOŚCI I WYSOKOSCI TO PROCENTOWE POZYCJE LUB WYMIARY
 
 # WYZNACZANIE WSPÓŁRZĘDNYCH KART DLA DANYCH POZIOMÓW
-def card_coordinates(width, height, card_a_height_size, card_width_size, card_height_size, padding_x, padding_y, ilosc, level, element):
+def card_coordinates(width, height, card_a_height_size, card_width_size, card_height_size, padding_x, padding_y, ilosc,
+                     level, element):
     coordinates_list = []
     if element == 'card':
         for i in range(ilosc):
-            coordinates_list.append((width * 0.2711 + padding_x, height*0.0408+card_a_height_size + level*padding_y+(level-1)*card_height_size, card_width_size, card_height_size))  # P1 AREA
+            coordinates_list.append((width * 0.2711 + padding_x, height*0.02+card_a_height_size + level*padding_y+(level-1)*card_height_size, card_width_size, card_height_size))  # P1 AREA
             padding_x += card_width_size/2 + width * 0.056
     elif element == 'marker':
         for i in range(ilosc):
-            coordinates_list.append((width * 0.2711 +height*0.06+ padding_x, height*0.0408+card_a_height_size + level*padding_y+(level-1)*card_height_size + height * 0.075))  # P1 AREA
+            coordinates_list.append((width * 0.2711 +height*0.06+ padding_x, height*0.008+card_a_height_size + level*padding_y+(level-1)*card_height_size + height * 0.075))  # P1 AREA
             padding_x += card_width_size/2 + width * 0.039
     return coordinates_list
+
+# WYZNACZANIE WSPÓŁRZĘDNYCH PRZYCISKÓW
+def button_coordinates(width, height, card_a_height_size, card_a_width_size, padding_x):
+    coordinates_b_list = []
+    for i in range(4):
+        coordinates_b_list.append((width * 0.2711 + padding_x, height-(height*0.08), card_a_width_size*1.1, card_a_height_size/2))  # P1 AREA
+        padding_x += card_a_width_size/2 + width * 0.085
+
+    return coordinates_b_list
 
 # UZUPEŁNIANIE KART NA STOLE Z STOSU W ZALEŻNOŚCI OD POZIOMU
 def place_the_card(card_lvl_1,card_lvl_2,card_lvl_3, line_lvl1, line_lvl2, line_lvl3):
@@ -155,9 +166,8 @@ def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card
 
     return line_lvl1, line_lvl2, line_lvl3 # ZWRACANA ZOSTAJE KROTKA DO ZAKTRUALIZOWANIA STANU NA STOLE
 
-
+# WYBIERANIE ZNACZNIKOW Z STOLU
 def choose_marker(marker, coordinates_marker, mouse_pos, marker_size):
-
     for position in coordinates_marker:
         # SPRAWDZAMY CZY KURSOR ZNAJDUJE SIE WEWNATRZ OKREGU SYMBOLIZUJACEGO ZNACZNIK
         pos_indx = coordinates_marker.index(position)
@@ -171,5 +181,47 @@ def choose_marker(marker, coordinates_marker, mouse_pos, marker_size):
             marker[pos_indx].sub_marker()
 
 
+def choose_button(coordinates_buttons, action, mouse_pos):
 
+    for position in coordinates_buttons:
+        pos_indx = coordinates_buttons.index(position)
+
+        pos_x = coordinates_buttons[pos_indx][0]
+        pos_y = coordinates_buttons[pos_indx][1]
+        size_x = coordinates_buttons[pos_indx][2]
+        size_y = coordinates_buttons[pos_indx][3]
+
+        # Zapios warunku sprawdzającego do zmiennej
+        requirement = (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y)
+
+        # WARUNEK SPRAWDZAJACY CZY KURSOR MYSZY ZNAJDUJE SIE NA PRZYCISKU
+        if requirement and pos_indx == 0:
+            print("Biorę trzy znaczniki różnego koloru")
+            return action[0]
+
+        elif requirement and pos_indx == 1:
+            print("Biorę dwa znaczniki tego samego koloru")
+            return action[1]
+
+        elif requirement and pos_indx == 2:
+            print("Rezerwuje kartę i biorę znacznik złota")
+            return action[2]
+
+        elif requirement and pos_indx == 3:
+            print("Kupuję kartę")
+            return action[3]
+
+
+
+# OKREŚLANIE CZYJA KOLEJ
+def player_turn(list_of_players, player_turn):
+    if player_turn != len(list_of_players)-1:
+        player_turn += 1
+    else:
+        player_turn = 0
+    return player_turn
+
+# WYBÓR AKCJI PRZEZ GRACZA ORAZ SPRAWDZENIE CZY DANA AKCJA MOZE SIE ODBYC
+def choose_action():
+    pass
 

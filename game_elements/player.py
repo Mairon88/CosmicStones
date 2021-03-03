@@ -5,5 +5,6 @@ class Player():
         self.markers = {}
         self.aristo_cards = []
         self.stone_cards = []
+        self.reserved_cards = 0
 
 

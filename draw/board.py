@@ -7,3 +7,7 @@ def draw_cards_markers(window, coordinates, height, element, marker_size=0):
     elif element == 'marker':
         for i in coordinates:
             pygame.draw.circle(window, (150, 150, 150), i, marker_size, 0)
+
+def draw_buttons(window, coordinates):
+    for i in coordinates:
+        pygame.draw.rect(window, (150, 150, 150), i)
