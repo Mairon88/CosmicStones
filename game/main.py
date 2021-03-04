@@ -33,10 +33,12 @@ game_over = False
 game_run = True
 confirm_name = 0 # Zmienna pomocnicza do potwierdzenia wprowadzenia imienia gracza
 prepare_game_elements = True    # Zmienna to przygotowania elementów
-player_turn = 0
+player_turn = 0 #indeks aktualnego gracza z listy graczy
 change_player = False
 action = ['take_3_markers','take_2_markers','reserve_a_card','buy_a_card']
-selected_action = ''
+selected_action = '' # Wybrana
+
+
 
 # LISTA UTWORZONYCH OBIEKTÓW Z ZNACZNIKAMI
 markers = []
@@ -122,9 +124,6 @@ while True:
                             current_view = list_view[3]
                             confirm_name = 0
 
-                elif current_view == "game_view" and game_run:
-                    player_turn = func.player_turn(list_of_players, player_turn)
-
                 elif current_view == "game_view" and game_over and game_run == False:
                     current_view = list_view[4]
                     prepare_game_elements = True
@@ -161,16 +160,45 @@ while True:
         # PRZYCIŚNIECIE I ZWOLNIENIE PRZYCISKU MYSZY SPOWODUJE DALSZE DZIAŁANIA
         if event.type == pygame.MOUSEBUTTONUP:
             if current_view == 'game_view':
+                # ZWRACA POZYCJE KURSORA W PIXELACH
                 mouse_pos = pygame.mouse.get_pos()
+
+                # PO KLIKNIECIU NA KARTE ZOSTAJE ZAKTUALIZOWANY STAN KART NA STOLE
                 updated_cards_after_choose = func.choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2,
                                                               coordinates_card_lvl_3, line_lvl1, line_lvl2,
                                                               line_lvl3,
                                                               mouse_pos)
                 (line_lvl1, line_lvl2, line_lvl3) = updated_cards_after_choose
-                func.choose_marker(markers, coordinates_marker, mouse_pos, marker_size)
-                func.choose_button(coordinates_buttons, action, mouse_pos)
-                # for i in markers:
-                #     print(i.name, i.quantity)
+
+                # WYBRANY ZNACZNIK
+                marker = func.choose_marker(markers, coordinates_marker, mouse_pos, marker_size, selected_action, list_of_players, player_turn)
+
+                # WYBRANA AKCJA
+                if selected_action == '':
+                    selected_action = func.choose_button(coordinates_buttons, action, mouse_pos)
+
+                print(f"Wybrana akcja:{selected_action},czy zmieniamy gracza?: {change_player}")
+
+                # WYKONANIE WYBRANEJ AKCJI
+                func.do_the_action(selected_action, list_of_players, player_turn, marker)
+
+                # SRRAWDZENIE CZY OSIĄGNIĘTO WARUNKI DO ZMIANY GRACZA
+                selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players, player_turn)
+
+                # JEŚLI OSIĄGNIETO WARUNKI ZMIANY GRACZA TO TUTAJ TO NASTĄPI
+                player_turn, change_player = func.player_turn(list_of_players, player_turn, change_player)
+                # change_player = False
+                print("\n\n==========Aktualny stan znaczników na stole==========")
+                for i in markers:
+                    print(i.name, i.quantity)
+                print("=====================================================")
+                print("==========Aktualny stan zasobów graczy===============")
+                print(f"Gracz: {list_of_players[player_turn].name}")
+                print(f"Znaczniki: {list_of_players[player_turn].markers}")
+                print(f"Ilosc wybranych znaczników: {list_of_players[player_turn].number_of_selected_markers}")
+                print("=====================================================")
+
+
 
 
 

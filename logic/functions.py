@@ -167,20 +167,23 @@ def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card
     return line_lvl1, line_lvl2, line_lvl3 # ZWRACANA ZOSTAJE KROTKA DO ZAKTRUALIZOWANIA STANU NA STOLE
 
 # WYBIERANIE ZNACZNIKOW Z STOLU
-def choose_marker(marker, coordinates_marker, mouse_pos, marker_size):
-    for position in coordinates_marker:
-        # SPRAWDZAMY CZY KURSOR ZNAJDUJE SIE WEWNATRZ OKREGU SYMBOLIZUJACEGO ZNACZNIK
-        pos_indx = coordinates_marker.index(position)
-        delta_x = mouse_pos[0] - position[0]
-        delta_y = mouse_pos[1] - position[1]
-        dsp = pow((pow(delta_x, 2) + pow(delta_y, 2)), 0.5)
+def choose_marker(marker, coordinates_marker, mouse_pos, marker_size,selected_action, list_of_players, player_turn):
+    if (selected_action == 'take_3_markers' and list_of_players[player_turn].number_of_selected_markers < 3) or (selected_action == 'take_2_markers' and list_of_players[player_turn].number_of_selected_markers < 2):
+        for position in coordinates_marker:
+            # SPRAWDZAMY CZY KURSOR ZNAJDUJE SIE WEWNATRZ OKREGU SYMBOLIZUJACEGO ZNACZNIK
+            pos_indx = coordinates_marker.index(position)
+            delta_x = mouse_pos[0] - position[0]
+            delta_y = mouse_pos[1] - position[1]
+            dsp = pow((pow(delta_x, 2) + pow(delta_y, 2)), 0.5)
 
-        # WARUNEK SPRAWDZAJACY CZY KURSOR MYSZY ZNAJDUJE SIE NA KARCIE
-        # JEŚLI WSZYSTKIE WARUNKI SĄ SPEŁNIONE MOZNA KLIKNAC NA KARTE I ZOSTAJ ONA USUNIETA Z STOŁU
-        if dsp < marker_size and marker[pos_indx].quantity > 0:
-            marker[pos_indx].sub_marker()
+            # WARUNEK SPRAWDZAJACY CZY KURSOR MYSZY ZNAJDUJE SIE NA ZNACZNIKU
+            # JEŚLI WSZYSTKIE WARUNKI SĄ SPEŁNIONE MOZNA KLIKNAC NA ZNACZNIK I ZOSTAJE USUNIETY Z STOŁU
+            if dsp < marker_size and marker[pos_indx].quantity > 0:
+                marker[pos_indx].sub_marker()
+                return marker[pos_indx].name
 
 
+# WYBÓR AKCJI PRZEZ NACIŚNIECIE ODPOWIEDNIEGO PRZYCISKU
 def choose_button(coordinates_buttons, action, mouse_pos):
 
     for position in coordinates_buttons:
@@ -196,32 +199,66 @@ def choose_button(coordinates_buttons, action, mouse_pos):
 
         # WARUNEK SPRAWDZAJACY CZY KURSOR MYSZY ZNAJDUJE SIE NA PRZYCISKU
         if requirement and pos_indx == 0:
-            print("Biorę trzy znaczniki różnego koloru")
             return action[0]
 
         elif requirement and pos_indx == 1:
-            print("Biorę dwa znaczniki tego samego koloru")
             return action[1]
 
         elif requirement and pos_indx == 2:
-            print("Rezerwuje kartę i biorę znacznik złota")
             return action[2]
 
         elif requirement and pos_indx == 3:
-            print("Kupuję kartę")
             return action[3]
 
-
+    return ''
 
 # OKREŚLANIE CZYJA KOLEJ
-def player_turn(list_of_players, player_turn):
-    if player_turn != len(list_of_players)-1:
-        player_turn += 1
+def player_turn(list_of_players, player_turn, change_player):
+    if change_player:
+        list_of_players[player_turn].number_of_selected_markers = 0
+        list_of_players[player_turn].took_card = False
+        list_of_players[player_turn].bought_card = False
+
+        if player_turn != len(list_of_players)-1:
+            player_turn += 1
+        else:
+            player_turn = 0
+        return player_turn, False
+    return player_turn, change_player
+
+# WYKONANIE ODPOWIEDNIEJ AKCJI
+def do_the_action(selected_action, list_of_players, player_turn, marker):
+    if selected_action == 'take_3_markers' and marker != None and list_of_players[player_turn].number_of_selected_markers < 3:
+        list_of_players[player_turn].markers.setdefault(marker, 0)
+        list_of_players[player_turn].markers[marker] += 1
+        print("Biorę trzy znaczniki różnego koloru")
+        list_of_players[player_turn].number_of_selected_markers += 1
+
+    elif selected_action == 'take_2_markers' and marker != None and list_of_players[player_turn].number_of_selected_markers < 2:
+        list_of_players[player_turn].markers.setdefault(marker, 0)
+        list_of_players[player_turn].markers[marker] += 1
+        print("Biorę dwa znaczniki tego samego koloru")
+        list_of_players[player_turn].number_of_selected_markers += 1
+
+    elif selected_action == 'reserve_a_card' and marker != None:
+        print("Rezerwuje kartę i biorę znacznik złota")
+
+    elif selected_action =='buy_a_card' and marker != None:
+        print("Kupuję kartę")
+
     else:
-        player_turn = 0
-    return player_turn
+        return 0
 
-# WYBÓR AKCJI PRZEZ GRACZA ORAZ SPRAWDZENIE CZY DANA AKCJA MOZE SIE ODBYC
-def choose_action():
-    pass
-
+def check_conditions_to_change_player(selected_action, list_of_players, player_turn):
+    if selected_action == 'take_3_markers' and list_of_players[player_turn].number_of_selected_markers == 3:
+        return '', True
+    elif selected_action == 'take_2_markers' and list_of_players[player_turn].number_of_selected_markers == 2:
+        return '', True
+    elif selected_action == 'reserve_a_card' and list_of_players[player_turn].took_card:
+        list_of_players[player_turn].taked_card = False
+        return '', True
+    elif selected_action == 'buy_a_card' and list_of_players[player_turn].bought_card:
+        list_of_players[player_turn].bought_card = False
+        return '', True
+    else:
+        return selected_action, False
