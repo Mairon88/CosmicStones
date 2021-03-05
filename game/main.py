@@ -37,7 +37,8 @@ player_turn = 0 #indeks aktualnego gracza z listy graczy
 change_player = False
 action = ['take_3_markers','take_2_markers','reserve_a_card','buy_a_card']
 selected_action = '' # Wybrana
-
+check_set_three = set({}) # zbriór do sprawdzenia czy wybrano 3 rozne znaczniki
+check_list_two = [] # lista do sprawdzenia czy wybrano 2 te same znaczniki
 
 
 # LISTA UTWORZONYCH OBIEKTÓW Z ZNACZNIKAMI
@@ -100,6 +101,11 @@ while True:
 
         # ZDANIERZA ZWIAZANE Z PRZYCIŚNIECIEM KLAWICZA NA KLAWIATRZUE
         if event.type == pygame.KEYDOWN:
+
+            # WCIŚNIECIE KLAWISZA ENTER
+            if game_run and event.key == pygame.K_r:
+                selected_action = ''
+
 
             # WCIŚNIECIE KLAWISZA ENTER
             if event.key == pygame.K_RETURN:
@@ -171,11 +177,12 @@ while True:
                 (line_lvl1, line_lvl2, line_lvl3) = updated_cards_after_choose
 
                 # WYBRANY ZNACZNIK
-                marker = func.choose_marker(markers, coordinates_marker, mouse_pos, marker_size, selected_action, list_of_players, player_turn)
+                marker = func.choose_marker(markers, coordinates_marker, mouse_pos, marker_size, selected_action,
+                                            list_of_players, player_turn, check_list_two, check_set_three)
 
                 # WYBRANA AKCJA
                 if selected_action == '':
-                    selected_action = func.choose_button(coordinates_buttons, action, mouse_pos)
+                    selected_action = func.choose_button(coordinates_buttons, action, mouse_pos, markers)
 
                 print(f"Wybrana akcja:{selected_action},czy zmieniamy gracza?: {change_player}")
 
@@ -183,12 +190,10 @@ while True:
                 func.do_the_action(selected_action, list_of_players, player_turn, marker)
 
                 # SRRAWDZENIE CZY OSIĄGNIĘTO WARUNKI DO ZMIANY GRACZA
-                selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players, player_turn)
+                selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players, player_turn, check_set_three, markers)
 
-                # JEŚLI OSIĄGNIETO WARUNKI ZMIANY GRACZA TO TUTAJ TO NASTĄPI
-                player_turn, change_player = func.player_turn(list_of_players, player_turn, change_player)
-                # change_player = False
-                print("\n\n==========Aktualny stan znaczników na stole==========")
+
+                print("==========Aktualny stan znaczników na stole==========")
                 for i in markers:
                     print(i.name, i.quantity)
                 print("=====================================================")
@@ -196,7 +201,14 @@ while True:
                 print(f"Gracz: {list_of_players[player_turn].name}")
                 print(f"Znaczniki: {list_of_players[player_turn].markers}")
                 print(f"Ilosc wybranych znaczników: {list_of_players[player_turn].number_of_selected_markers}")
+                print(f"Wybrane znaczniki w przypadku trzech {check_set_three}")
+                print(f"Wybrane znaczniki w przypadku dwóch {check_list_two}")
                 print("=====================================================")
+
+                # JEŚLI OSIĄGNIETO WARUNKI ZMIANY GRACZA TO TUTAJ TO NASTĄPI
+                player_turn, change_player, check_list_two, check_set_three = func.player_next(list_of_players, player_turn, change_player, check_list_two, check_set_three)
+
+
 
 
 
