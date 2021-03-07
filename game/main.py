@@ -40,6 +40,13 @@ selected_action = '' # Wybrana
 check_set_three = set({}) # zbriór do sprawdzenia czy wybrano 3 rozne znaczniki
 check_list_two = [] # lista do sprawdzenia czy wybrano 2 te same znaczniki
 
+# POŁOZENIE GRACZY NA EKRANIE
+# indeks 0 - gracz 1, indeks 1 - gracz 2 itd.
+# gracz 1 [0][0] - width_pos, [0][1] - height_pos, [0][2] - width_size, [0][3] - height_size
+player_coordinates = [[width * 0.01977, height * 0.019, width * 0.2401, height * 0.4489],
+                      [width * 0.743, height * 0.019, width * 0.2401, height * 0.4489],
+                      [width * 0.743, height * 0.527, width * 0.2401, height * 0.4489],
+                      [width * 0.01977,height * 0.527, width * 0.2401, height * 0.4489]]
 
 # LISTA UTWORZONYCH OBIEKTÓW Z ZNACZNIKAMI
 markers = []
@@ -224,7 +231,7 @@ while True:
 
     # TWORZENIE GRACZY
     if current_view == "player_names_view":
-        func.create_players(number_of_players, list_of_players)
+        func.create_players(number_of_players, list_of_players, window, player_coordinates)
 
     # ROZPOCZĘCIE GRY
     if current_view == 'game_view':
@@ -283,5 +290,9 @@ while True:
 
         # WYŚWIWETLANIE PRZYCISKÓW
         db.draw_buttons(window, coordinates_buttons)
+    for i in list_of_players:
+        i.draw_player_board()
+        i.draw_player_text()
+
 
     pygame.display.update()

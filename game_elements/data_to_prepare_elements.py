@@ -179,4 +179,3 @@ list_cards_lvl_1 = [prepare_cards_1_1_0, prepare_cards_1_4_0_v2, prepare_cards_1
 
 
 
-#TWORZNEIE OBIEKTÓW KART

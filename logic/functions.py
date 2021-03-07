@@ -13,11 +13,11 @@ def enter_num_of_pl():
 
 
 # FUNKCJA TWORZACA OBIEKTY GRACZY
-def create_players(number_of_players, list_of_players):
+def create_players(number_of_players, list_of_players, window, player_coordinates):
     if number_of_players is not None:
         if len(list_of_players) < number_of_players:
             for i in range(number_of_players):
-                list_of_players.append(plr.Player("No_Name"))
+                list_of_players.append(plr.Player("No_Name", window, player_coordinates[i]))
 
 
 # FUNKCJA DO PODAWANIA IMION GRACZY
@@ -65,15 +65,15 @@ def create_aristo(prepare_aristo, num_of_players):
 # LICZBY PRZEZ KTÓRE SĄ MNOŻONE SZEROKOŚCI I WYSOKOSCI TO PROCENTOWE POZYCJE LUB WYMIARY
 
 # WYZNACZANIE WSPÓŁRZĘDNYCH KART DLA DANYCH POZIOMÓW
-def card_coordinates(width, height, card_a_height_size, card_width_size, card_height_size, padding_x, padding_y, ilosc,
+def card_coordinates(width, height, card_a_height_size, card_width_size, card_height_size, padding_x, padding_y, quantity,
                      level, element):
     coordinates_list = []
     if element == 'card':
-        for i in range(ilosc):
+        for i in range(quantity):
             coordinates_list.append((width * 0.2711 + padding_x, height*0.02+card_a_height_size + level*padding_y+(level-1)*card_height_size, card_width_size, card_height_size))  # P1 AREA
             padding_x += card_width_size/2 + width * 0.056
     elif element == 'marker':
-        for i in range(ilosc):
+        for i in range(quantity):
             coordinates_list.append((width * 0.2711 +height*0.06+ padding_x, height*0.008+card_a_height_size + level*padding_y+(level-1)*card_height_size + height * 0.075))  # P1 AREA
             padding_x += card_width_size/2 + width * 0.039
     return coordinates_list
@@ -82,7 +82,7 @@ def card_coordinates(width, height, card_a_height_size, card_width_size, card_he
 def button_coordinates(width, height, card_a_height_size, card_a_width_size, padding_x):
     coordinates_b_list = []
     for i in range(4):
-        coordinates_b_list.append((width * 0.2711 + padding_x, height-(height*0.08), card_a_width_size*1.1, card_a_height_size/2))  # P1 AREA
+        coordinates_b_list.append((width * 0.2711 + padding_x, height-(height*0.08), card_a_width_size*1.1, card_a_height_size/2.5))  # P1 AREA
         padding_x += card_a_width_size/2 + width * 0.085
 
     return coordinates_b_list
