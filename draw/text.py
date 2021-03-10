@@ -3,7 +3,8 @@ import sys
 import pygame.event as GAME_EVENTS
 import draw.characters as char
 
-def show_text(window, width, height, myfont, myfont2,current_view, number_of_players, confirm, player_turn, list_of_players, markers):
+def show_text(window, width, height, myfont, myfont2,current_view, number_of_players,
+              confirm, player_turn, list_of_players, markers, card_lvl_1, card_lvl_2, card_lvl_3):
     if current_view == 'start_view':
         text = 'COSMIC STONES'  # Tytył gry
         text_width, text_height = myfont.size(text)  # Określenie szerokości i wysokości tekstu w pikselach
@@ -43,6 +44,10 @@ def show_text(window, width, height, myfont, myfont2,current_view, number_of_pla
             num_of_markers = myfont2.render("x"+str(i.quantity), True, (250, 255, 255))
             window.blit(num_of_markers, (width*0.33+padding_x*(width*0.077),height*0.875))
             padding_x += 1
+
+
+
+
 
     elif current_view == 'result_view':
         text = 'WYNIKI'  # Tytył gry

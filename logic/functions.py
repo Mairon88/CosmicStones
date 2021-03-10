@@ -115,8 +115,9 @@ def place_the_card(card_lvl_1,card_lvl_2,card_lvl_3, line_lvl1, line_lvl2, line_
 
 # WYBIERANIE KARTY I USUWANIE JEJ Z STOŁU, PO CZYM UZUPEŁNIE Z STOSU ZGODNIE Z FUNKCJA POWYZEJ place_the_card
 def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card_lvl_3, line_lvl1, line_lvl2,
-                line_lvl3, mouse_pos):
+                line_lvl3, mouse_pos, selected_action):
     # CHECK LINE LVL3
+    card = None
     for position3 in coordinates_card_lvl_3:
         pos_indx = coordinates_card_lvl_3.index(position3)
         if pos_indx == 0:   # POZYCJA O INDEKSIE 0 ODNOSI SIE DO STOSU A POTRZEBUJEMY WYŁACZNIE KARTY NA STOLE
@@ -130,10 +131,11 @@ def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card
 
             # WARUNEK SPRAWDZAJACY CZY KURSOR MYSZY ZNAJDUJE SIE NA KARCIE
             # JEŚLI WSZYSTKIE WARUNKI SĄ SPEŁNIONE MOZNA KLIKNAC NA KARTE I ZOSTAJ ONA USUNIETA Z STOŁU
-            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y):
+            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and selected_action == 'buy_a_card':
                 print("Klikam w dobrym miejscu")
                 if len(line_lvl3[pos_indx-1]) > 0:
-                    line_lvl3[pos_indx-1].pop()
+                    card = line_lvl3[pos_indx-1].pop()
+
 
     # ZASADA JAK WYŻEJ ALE DLA INNYCH POZIOMÓW KART (DO ZOPTYMALIZOWANIA BO KOD SIE POWTARZA!!!)
     for position2 in coordinates_card_lvl_2:
@@ -145,10 +147,10 @@ def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card
             pos_y = coordinates_card_lvl_2[pos_indx][1]
             size_x = coordinates_card_lvl_2[pos_indx][2]
             size_y = coordinates_card_lvl_2[pos_indx][3]
-            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y):
+            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and selected_action == 'buy_a_card':
                 print("Klikam w dobrym miejscu")
                 if len(line_lvl2[pos_indx - 1]) > 0:
-                    line_lvl2[pos_indx - 1].pop()
+                    card = line_lvl2[pos_indx - 1].pop()
 
     for position1 in coordinates_card_lvl_1:
         pos_indx = coordinates_card_lvl_1.index(position1)
@@ -159,12 +161,12 @@ def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card
             pos_y = coordinates_card_lvl_1[pos_indx][1]
             size_x = coordinates_card_lvl_1[pos_indx][2]
             size_y = coordinates_card_lvl_1[pos_indx][3]
-            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y):
+            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and selected_action == 'buy_a_card':
                 print("Klikam w dobrym miejscu")
                 if len(line_lvl1[pos_indx - 1]) > 0:
-                    line_lvl1[pos_indx - 1].pop()
+                    card = line_lvl1[pos_indx - 1].pop()
 
-    return line_lvl1, line_lvl2, line_lvl3 # ZWRACANA ZOSTAJE KROTKA DO ZAKTRUALIZOWANIA STANU NA STOLE
+    return (line_lvl1, line_lvl2, line_lvl3), card# ZWRACANA ZOSTAJE KROTKA DO ZAKTRUALIZOWANIA STANU NA STOLE
 
 # WYBIERANIE ZNACZNIKOW Z STOLU
 def choose_marker(marker, coordinates_marker, mouse_pos, marker_size,selected_action, list_of_players, player_turn, check_list_two, check_set_three):
@@ -248,7 +250,7 @@ def player_next(list_of_players, player_turn, change_player, check_list_two, che
     return player_turn, change_player, check_list_two, check_set_three
 
 # WYKONANIE ODPOWIEDNIEJ AKCJI
-def do_the_action(selected_action, list_of_players, player_turn, marker):
+def do_the_action(selected_action, list_of_players, player_turn, marker, card):
     if selected_action == 'take_3_markers' and marker != None and list_of_players[player_turn].number_of_selected_markers < 3:
         list_of_players[player_turn].markers.setdefault(marker, 0)
         list_of_players[player_turn].markers[marker] += 1
@@ -264,11 +266,20 @@ def do_the_action(selected_action, list_of_players, player_turn, marker):
     elif selected_action == 'reserve_a_card' and marker != None:
         print("Rezerwuje kartę i biorę znacznik złota")
 
-    elif selected_action =='buy_a_card' and marker != None:
-        print("Kupuję kartę")
+    elif selected_action =='buy_a_card':
+        if card != None:
+            if card.name == 'emerald':
+                list_of_players[player_turn].stone_cards_em.append(card)
+            elif card.name == 'sapphire':
+                list_of_players[player_turn].stone_cards_sa.append(card)
+            elif card.name == 'ruby':
+                list_of_players[player_turn].stone_cards_ru.append(card)
+            elif card.name == 'diamond':
+                list_of_players[player_turn].stone_cards_di.append(card)
+            elif card.name == 'onyx':
+                list_of_players[player_turn].stone_cards_on.append(card)
+            list_of_players[player_turn].bought_card = True
 
-    else:
-        return 0
 
 # JEŚLI WYBRANO AKCJE Z TRZEMA ZNACZNIKAMI A MOZNA WZIAC MNIEJ NIZ 3 TO PO WYRABNIU JEDNEGO LUB DWOCH ZMIANA GRACZA
 # JEŚLI CHOCIAZ JEDEN ZNACZNIK INNY NIZ TE CO WYBRALISMY MA WARTOSC WIEKSZA NIZ 0 TO ZRWACA FALSE
@@ -304,6 +315,7 @@ def check_conditions_to_change_player(selected_action, list_of_players, player_t
     elif selected_action == 'reserve_a_card' and list_of_players[player_turn].took_card:
         list_of_players[player_turn].taked_card = False
         return '', True
+
     elif selected_action == 'buy_a_card' and list_of_players[player_turn].bought_card:
         list_of_players[player_turn].bought_card = False
         return '', True

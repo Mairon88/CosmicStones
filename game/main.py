@@ -35,7 +35,7 @@ confirm_name = 0 # Zmienna pomocnicza do potwierdzenia wprowadzenia imienia grac
 prepare_game_elements = True    # Zmienna to przygotowania elementów
 player_turn = 0 #indeks aktualnego gracza z listy graczy
 change_player = False
-action = ['take_3_markers','take_2_markers','reserve_a_card','buy_a_card']
+action = ['take_3_markers','take_2_markers','buy_a_card','reserve_a_card']
 selected_action = '' # Wybrana
 check_set_three = set({}) # zbriór do sprawdzenia czy wybrano 3 rozne znaczniki
 check_list_two = [] # lista do sprawdzenia czy wybrano 2 te same znaczniki
@@ -176,54 +176,64 @@ while True:
                 # ZWRACA POZYCJE KURSORA W PIXELACH
                 mouse_pos = pygame.mouse.get_pos()
 
+                # SPRAWDZANIE CZY STAC MNIE NA COKOLWIEK Z KART Z STOŁU
+                list_of_players[player_turn].can_i_afford_it(line_lvl1, line_lvl2, line_lvl3)
+
                 # PO KLIKNIECIU NA KARTE ZOSTAJE ZAKTUALIZOWANY STAN KART NA STOLE
                 updated_cards_after_choose = func.choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2,
                                                               coordinates_card_lvl_3, line_lvl1, line_lvl2,
                                                               line_lvl3,
-                                                              mouse_pos)
-                (line_lvl1, line_lvl2, line_lvl3) = updated_cards_after_choose
+                                                              mouse_pos, selected_action)
+                (line_lvl1, line_lvl2, line_lvl3) = updated_cards_after_choose[0]
+                card = updated_cards_after_choose[1]
 
                 # WYBRANY ZNACZNIK
                 marker = func.choose_marker(markers, coordinates_marker, mouse_pos, marker_size, selected_action,
                                             list_of_players, player_turn, check_list_two, check_set_three)
+
+
 
                 # WYBRANA AKCJA
                 if selected_action == '':
                     selected_action = func.choose_button(coordinates_buttons, action, mouse_pos, markers)
 
                 # WYKONANIE WYBRANEJ AKCJI
-                func.do_the_action(selected_action, list_of_players, player_turn, marker)
+                func.do_the_action(selected_action, list_of_players, player_turn, marker, card)
 
                 # SRRAWDZENIE CZY OSIĄGNIĘTO WARUNKI DO ZMIANY GRACZA
                 selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players, player_turn, check_set_three, markers, mouse_pos)
 
 
-                print("==========Aktualny stan znaczników na stole==========")
-                for i in markers:
-                    print(i.name, i.quantity)
-                print("=====================================================")
+                # print("==========Aktualny stan znaczników na stole==========")
+                # for i in markers:
+                #     print(i.name, i.quantity)
+                # print("=====================================================")
                 print("==========Aktualny stan zasobów graczy===============")
-                print(selected_action)
+                print(f"Wybrana akcja: {selected_action}")
                 print(f"Gracz: {list_of_players[player_turn].name}")
                 print(f"Znaczniki: {list_of_players[player_turn].markers}")
                 print(f"Ilosc wybranych znaczników: {list_of_players[player_turn].number_of_selected_markers}")
                 print(f"Wybrane znaczniki w przypadku trzech {check_set_three}")
                 print(f"Wybrane znaczniki w przypadku dwóch {check_list_two}")
                 print(f"Ilość znaczników gracza {list_of_players[player_turn].check_num_of_player_markers()}")
+                print(f"Karty emerald gracza: {list_of_players[player_turn].stone_cards_em}")
+                print(f"Karty sapphire gracza: {list_of_players[player_turn].stone_cards_sa}")
+                print(f"Karty ruby gracza: {list_of_players[player_turn].stone_cards_ru}")
+                print(f"Karty diamond gracza: {list_of_players[player_turn].stone_cards_di}")
+                print(f"Karty onyx gracza: {list_of_players[player_turn].stone_cards_on}")
+                print(f"SUMA EMERALD:{list_of_players[player_turn].sum_of_stones_em}")
+                print(f"SUMA SAPPHIRE:{list_of_players[player_turn].sum_of_stones_sa}")
+                print(f"SUMA RUBY:{list_of_players[player_turn].sum_of_stones_ru}")
+                print(f"SUMA DIAMOND:{list_of_players[player_turn].sum_of_stones_di}")
+                print(f"SUMA ONYX:{list_of_players[player_turn].sum_of_stones_on}")
                 print("=====================================================")
 
                 # JEŚLI OSIĄGNIETO WARUNKI ZMIANY GRACZA TO TUTAJ TO NASTĄPI
                 player_turn, change_player, check_list_two, check_set_three = func.player_next(list_of_players, player_turn, change_player, check_list_two, check_set_three)
 
-
-
-
-
-
-
     # WYŚWIETLANIE TEKSTÓW NA EKRANIE
     pt.show_text(window, width, height, myfont, myfont2, current_view, number_of_players, confirm_name, player_turn,
-                 list_of_players, markers)
+                 list_of_players, markers, card_lvl_1, card_lvl_2, card_lvl_3)
 
     # ZAPISANIE ILOŚCI GRACZY DO ZMIENNEJ
     if current_view == "number_of_players_view":
@@ -235,7 +245,7 @@ while True:
 
     # ROZPOCZĘCIE GRY
     if current_view == 'game_view':
-
+        list_of_players[player_turn].update_sum_of_stones()
         # TWORZENIE ELEMENTÓW GRY
         if prepare_game_elements:
             markers = func.create_markers(pele.prepare_markers, number_of_players)
@@ -298,7 +308,17 @@ while True:
         i.draw_player_reserved_stone_cards(window)
         i.draw_player_gold_marker(window)
 
-    player = myfont.render(str(player_turn+1), True, (250, 255, 255))
-    window.blit(player, (width/2, height*0.01))
+
+    # POMOCNICZNE WYŚWIETLANIE TEKSTU
+    if current_view =="game_view":
+        player = myfont.render(str(player_turn+1), True, (250, 255, 255))
+        window.blit(player, (width/2, height*0.01))
+        num_of_card_l3 = myfont2.render(str(len(card_lvl_3)), True, (250, 255, 255))
+        window.blit(num_of_card_l3, (width * 0.305, height * 0.25))
+        num_of_card_l2 = myfont2.render(str(len(card_lvl_2)), True, (250, 255, 255))
+        window.blit(num_of_card_l2, (width * 0.305, height * 0.45))
+        num_of_card_l1 = myfont2.render(str(len(card_lvl_1)), True, (250, 255, 255))
+        window.blit(num_of_card_l1, (width * 0.305, height * 0.65))
+
 
     pygame.display.update()
