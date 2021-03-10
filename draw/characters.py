@@ -7,7 +7,7 @@ def characters(event, option):
     global word, num
     if event.type == pygame.KEYDOWN:
         if option == 'player_names':
-            if len(word) < 20:
+            if len(word) < 15:
                 if event.key == pygame.K_a:
                     word += "a"
                 if event.key == pygame.K_b:

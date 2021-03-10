@@ -18,7 +18,7 @@ pygame.init()
 # INICJALIZACJA CZCIONEK
 pygame.font.init()  # Inicjalizacja czionek
 myfont = pygame.font.SysFont('ARIAL', 40)   #Wczytanie czcionki
-
+myfont2 = pygame.font.SysFont('ARIAL', 30)
 # TWORZENIE OKNA GRY
 infoObject = pygame.display.Info()  # informacje o wymiarach ekranu
 width = infoObject.current_w-150    # wymiary potrzbne dla okna gry
@@ -191,13 +191,11 @@ while True:
                 if selected_action == '':
                     selected_action = func.choose_button(coordinates_buttons, action, mouse_pos, markers)
 
-                print(f"Wybrana akcja:{selected_action},czy zmieniamy gracza?: {change_player}")
-
                 # WYKONANIE WYBRANEJ AKCJI
                 func.do_the_action(selected_action, list_of_players, player_turn, marker)
 
                 # SRRAWDZENIE CZY OSIĄGNIĘTO WARUNKI DO ZMIANY GRACZA
-                selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players, player_turn, check_set_three, markers)
+                selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players, player_turn, check_set_three, markers, mouse_pos)
 
 
                 print("==========Aktualny stan znaczników na stole==========")
@@ -205,11 +203,13 @@ while True:
                     print(i.name, i.quantity)
                 print("=====================================================")
                 print("==========Aktualny stan zasobów graczy===============")
+                print(selected_action)
                 print(f"Gracz: {list_of_players[player_turn].name}")
                 print(f"Znaczniki: {list_of_players[player_turn].markers}")
                 print(f"Ilosc wybranych znaczników: {list_of_players[player_turn].number_of_selected_markers}")
                 print(f"Wybrane znaczniki w przypadku trzech {check_set_three}")
                 print(f"Wybrane znaczniki w przypadku dwóch {check_list_two}")
+                print(f"Ilość znaczników gracza {list_of_players[player_turn].check_num_of_player_markers()}")
                 print("=====================================================")
 
                 # JEŚLI OSIĄGNIETO WARUNKI ZMIANY GRACZA TO TUTAJ TO NASTĄPI
@@ -222,8 +222,8 @@ while True:
 
 
     # WYŚWIETLANIE TEKSTÓW NA EKRANIE
-    pt.show_text(window, width, height, myfont, current_view, number_of_players, confirm_name, player_turn,
-                 list_of_players)
+    pt.show_text(window, width, height, myfont, myfont2, current_view, number_of_players, confirm_name, player_turn,
+                 list_of_players, markers)
 
     # ZAPISANIE ILOŚCI GRACZY DO ZMIENNEJ
     if current_view == "number_of_players_view":
@@ -231,7 +231,7 @@ while True:
 
     # TWORZENIE GRACZY
     if current_view == "player_names_view":
-        func.create_players(number_of_players, list_of_players, window, player_coordinates)
+        func.create_players(number_of_players, list_of_players, player_coordinates, width, height)
 
     # ROZPOCZĘCIE GRY
     if current_view == 'game_view':
@@ -272,7 +272,6 @@ while True:
                                                            card_s_height_size, padding_x, padding_y, 6, 4, 'marker')
 
             coordinates_buttons = func.button_coordinates(width, height, card_a_height_size, card_s_width_size, padding_x)
-
             prepare_game_elements = False
 
         # POBIERANIE KART Z STOSU I UZUPEŁNIANIE NA STOLE JEŚLI KTÓREJŚ BRAKUJE
@@ -290,9 +289,16 @@ while True:
 
         # WYŚWIWETLANIE PRZYCISKÓW
         db.draw_buttons(window, coordinates_buttons)
+    # WYŚWIETLANIE STOŁU GRACZA WRAZ Z ELEMENTAMI GRY
     for i in list_of_players:
-        i.draw_player_board()
-        i.draw_player_text()
+        i.draw_player_board(window)
+        i.draw_player_text(window)
+        i.draw_player_stone_cards(window)
+        i.draw_player_markers(window)
+        i.draw_player_reserved_stone_cards(window)
+        i.draw_player_gold_marker(window)
 
+    player = myfont.render(str(player_turn+1), True, (250, 255, 255))
+    window.blit(player, (width/2, height*0.01))
 
     pygame.display.update()

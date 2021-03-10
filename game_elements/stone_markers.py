@@ -2,7 +2,7 @@ class Markers():
     def __init__(self, name, joker, quantity, num_of_players):
         self.name = name
         self.joker = joker
-        self. quantity = quantity
+        self.quantity = quantity
         self.num_of_players = num_of_players
 
     def sub_marker(self):

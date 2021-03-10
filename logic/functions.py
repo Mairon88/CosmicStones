@@ -13,11 +13,11 @@ def enter_num_of_pl():
 
 
 # FUNKCJA TWORZACA OBIEKTY GRACZY
-def create_players(number_of_players, list_of_players, window, player_coordinates):
+def create_players(number_of_players, list_of_players, player_coordinates, width, height):
     if number_of_players is not None:
         if len(list_of_players) < number_of_players:
             for i in range(number_of_players):
-                list_of_players.append(plr.Player("No_Name", window, player_coordinates[i]))
+                list_of_players.append(plr.Player("No_Name", player_coordinates[i], width, height))
 
 
 # FUNKCJA DO PODAWANIA IMION GRACZY
@@ -279,11 +279,28 @@ def action_three_with_null(check_set_three, markers):
     return True
 
 # SPRAWDZENIE WARUNKOW DO ZMIANY GRACZA
-def check_conditions_to_change_player(selected_action, list_of_players, player_turn, check_set_three, markers):
-    if selected_action == 'take_3_markers' and (list_of_players[player_turn].number_of_selected_markers == 3 or action_three_with_null(check_set_three, markers)):
-        return '', True
+def check_conditions_to_change_player(selected_action, list_of_players, player_turn, check_set_three, markers, mouse_pos):
+    if selected_action == 'take_3_markers' and (list_of_players[player_turn].number_of_selected_markers == 3 or
+            action_three_with_null(check_set_three, markers)):
+        if list_of_players[player_turn].check_num_of_player_markers() < 11:
+            return '', True
+        else:
+            list_of_players[player_turn].choose_player_marker(mouse_pos, markers)
+            if list_of_players[player_turn].check_num_of_player_markers() < 11:
+                return '', True
+            else:
+                return selected_action, False
     elif selected_action == 'take_2_markers' and list_of_players[player_turn].number_of_selected_markers == 2:
-        return '', True
+        if list_of_players[player_turn].check_num_of_player_markers() < 11:
+            return '', True
+        else:
+            list_of_players[player_turn].choose_player_marker(mouse_pos, markers)
+            if list_of_players[player_turn].check_num_of_player_markers() < 11:
+                return '', True
+            else:
+                return selected_action, False
+
+
     elif selected_action == 'reserve_a_card' and list_of_players[player_turn].took_card:
         list_of_players[player_turn].taked_card = False
         return '', True
