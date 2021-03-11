@@ -173,35 +173,37 @@ while True:
         # PRZYCIŚNIECIE I ZWOLNIENIE PRZYCISKU MYSZY SPOWODUJE DALSZE DZIAŁANIA
         if event.type == pygame.MOUSEBUTTONUP:
             if current_view == 'game_view':
+
                 # ZWRACA POZYCJE KURSORA W PIXELACH
                 mouse_pos = pygame.mouse.get_pos()
 
-                # SPRAWDZANIE CZY STAC MNIE NA COKOLWIEK Z KART Z STOŁU
-                list_of_players[player_turn].can_i_afford_it(line_lvl1, line_lvl2, line_lvl3)
+                # PRZELICZENIE I ZAKTUALIZOWANIE ZASOBÓW GRACZA
+                list_of_players[player_turn].update_sum_of_stones()
+
 
                 # PO KLIKNIECIU NA KARTE ZOSTAJE ZAKTUALIZOWANY STAN KART NA STOLE
                 updated_cards_after_choose = func.choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2,
                                                               coordinates_card_lvl_3, line_lvl1, line_lvl2,
                                                               line_lvl3,
-                                                              mouse_pos, selected_action)
+                                                              mouse_pos, selected_action, list_of_players[player_turn])
                 (line_lvl1, line_lvl2, line_lvl3) = updated_cards_after_choose[0]
                 card = updated_cards_after_choose[1]
 
                 # WYBRANY ZNACZNIK
                 marker = func.choose_marker(markers, coordinates_marker, mouse_pos, marker_size, selected_action,
-                                            list_of_players, player_turn, check_list_two, check_set_three)
+                                            list_of_players[player_turn], check_list_two, check_set_three)
 
 
 
                 # WYBRANA AKCJA
                 if selected_action == '':
-                    selected_action = func.choose_button(coordinates_buttons, action, mouse_pos, markers)
+                    selected_action = func.choose_button(coordinates_buttons, action, mouse_pos, markers, list_of_players[player_turn])
 
                 # WYKONANIE WYBRANEJ AKCJI
-                func.do_the_action(selected_action, list_of_players, player_turn, marker, card)
+                func.do_the_action(selected_action, list_of_players[player_turn], marker, card)
 
                 # SRRAWDZENIE CZY OSIĄGNIĘTO WARUNKI DO ZMIANY GRACZA
-                selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players, player_turn, check_set_three, markers, mouse_pos)
+                selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players[player_turn], check_set_three, markers, mouse_pos)
 
 
                 # print("==========Aktualny stan znaczników na stole==========")
@@ -211,21 +213,17 @@ while True:
                 print("==========Aktualny stan zasobów graczy===============")
                 print(f"Wybrana akcja: {selected_action}")
                 print(f"Gracz: {list_of_players[player_turn].name}")
-                print(f"Znaczniki: {list_of_players[player_turn].markers}")
-                print(f"Ilosc wybranych znaczników: {list_of_players[player_turn].number_of_selected_markers}")
-                print(f"Wybrane znaczniki w przypadku trzech {check_set_three}")
-                print(f"Wybrane znaczniki w przypadku dwóch {check_list_two}")
-                print(f"Ilość znaczników gracza {list_of_players[player_turn].check_num_of_player_markers()}")
-                print(f"Karty emerald gracza: {list_of_players[player_turn].stone_cards_em}")
-                print(f"Karty sapphire gracza: {list_of_players[player_turn].stone_cards_sa}")
-                print(f"Karty ruby gracza: {list_of_players[player_turn].stone_cards_ru}")
-                print(f"Karty diamond gracza: {list_of_players[player_turn].stone_cards_di}")
-                print(f"Karty onyx gracza: {list_of_players[player_turn].stone_cards_on}")
-                print(f"SUMA EMERALD:{list_of_players[player_turn].sum_of_stones_em}")
-                print(f"SUMA SAPPHIRE:{list_of_players[player_turn].sum_of_stones_sa}")
-                print(f"SUMA RUBY:{list_of_players[player_turn].sum_of_stones_ru}")
-                print(f"SUMA DIAMOND:{list_of_players[player_turn].sum_of_stones_di}")
-                print(f"SUMA ONYX:{list_of_players[player_turn].sum_of_stones_on}")
+                # print(f"Znaczniki: {list_of_players[player_turn].markers}")
+                # print(f"Ilosc wybranych znaczników: {list_of_players[player_turn].number_of_selected_markers}")
+                # print(f"Wybrane znaczniki w przypadku trzech {check_set_three}")
+                # print(f"Wybrane znaczniki w przypadku dwóch {check_list_two}")
+                # print(f"Ilość znaczników gracza {list_of_players[player_turn].check_num_of_player_markers()}")
+                # print(f"Karty emerald gracza: {list_of_players[player_turn].stone_cards_em}")
+                # print(f"Karty sapphire gracza: {list_of_players[player_turn].stone_cards_sa}")
+                # print(f"Karty ruby gracza: {list_of_players[player_turn].stone_cards_ru}")
+                # print(f"Karty diamond gracza: {list_of_players[player_turn].stone_cards_di}")
+                # print(f"Karty onyx gracza: {list_of_players[player_turn].stone_cards_on}")
+                # print(f"SUMA KAMIENI KARTY Z  ZNACZNIKAMI:{list_of_players[player_turn].sum_of_stones_card_markers}")
                 print("=====================================================")
 
                 # JEŚLI OSIĄGNIETO WARUNKI ZMIANY GRACZA TO TUTAJ TO NASTĄPI
@@ -245,7 +243,7 @@ while True:
 
     # ROZPOCZĘCIE GRY
     if current_view == 'game_view':
-        list_of_players[player_turn].update_sum_of_stones()
+
         # TWORZENIE ELEMENTÓW GRY
         if prepare_game_elements:
             markers = func.create_markers(pele.prepare_markers, number_of_players)

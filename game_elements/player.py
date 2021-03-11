@@ -14,16 +14,12 @@ class Player():
         self.stone_cards_di = []  # Karty kamieni gracza diamond
         self.stone_cards_on = []  # Karty kamieni gracza onyx
 
-        self.sum_of_stones_em = 0
-        self.sum_of_stones_sa = 0
-        self.sum_of_stones_ru = 0
-        self.sum_of_stones_di = 0
-        self.sum_of_stones_on = 0
+        self.sum_of_stones_card_markers = {'emerald': 0, 'sapphire': 0, 'ruby': 0, 'diamond': 0, 'onyx': 0, 'gold': 0}
 
         self.reserved_cards = [] # Zarezerwowane karty
         self.number_of_selected_markers = 0 # Zmienna pomocniczna, aktualna ilosc wybranych znacznikow z stolu podczas tury
         self.num_of_all_markers = 0
-        self.can_i_buy_sth = False
+        self.can_i_buy_sth = True
         self.took_card = False # Czy wybrano kartę?
         self.bought_card = False # Czy kupiono kartę?
 
@@ -155,24 +151,53 @@ class Player():
                 self.markers[pos_indx_key] -= 1
                 markers[pos_indx].add_marker()
 
-    def can_i_afford_it(self,line_lvl1, line_lvl2, line_lvl3):
-        print("Czy mnie na to stać???")
-        print("Wymagania dla kart I poziomu")
-        for i in line_lvl1:
-            print(i[0].name, i[0].stones)
-        print("Wymagania dla kart II poziomu")
-        for j in line_lvl2:
-            print(j[0].name, j[0].stones)
-        print("Wymagania dla kart III poziomu")
-        for k in line_lvl3:
-            print(k[0].name, k[0].stones)
+    def can_i_afford_it(self,card):
+        for key in card[0].stones.keys():
+            if card[0].stones[key] > self.markers[key]:
+                print("Nie stać Cię")
+                return False
+        print("Karta kupiona")
+        return True
+
+
+
+
+        # print("Czy mnie na to stać???")
+        # print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Wymagania dla kart I poziomu >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # for i in line_lvl1:
+        #     print(i[0].name, i[0].stones)
+        #     for key_lvl1 in i[0].stones.keys():
+        #         if i[0].stones[key_lvl1] > self.sum_of_stones_card_markers[key_lvl1]:
+        #             print("Nie stać Cię")
+        #             continue
+        #     print("Stać Cię na tą kartę")
+        # print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Wymagania dla kart II poziomu >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # for j in line_lvl2:
+        #     print(j[0].name, j[0].stones)
+        #     for key_lvl2 in j[0].stones.keys():
+        #         if j[0].stones[key_lvl2] > self.sum_of_stones_card_markers[key_lvl2]:
+        #             print("Nie stać Cię")
+        #             continue
+        #         print("Stać Cię na tą kartę")
+        # print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Wymagania dla kart III poziomu >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # for k in line_lvl3:
+        #     print(k[0].name, k[0].stones)
+        #     for key_lvl3 in k[0].stones.keys():
+        #         if k[0].stones[key_lvl3] > self.sum_of_stones_card_markers[key_lvl3]:
+        #             print("Nie stać Cię")
+        #             break
+        #     print("Stać Cię na tą kartę")
+
+        # JEŚLI WARUNKI ZOSTANA SPEŁNIONE TO
+        # self.can_i_buy_sth = True
 
     def update_sum_of_stones(self):
-        self.sum_of_stones_em = self.markers['emerald'] + len(self.stone_cards_em)
-        self.sum_of_stones_sa = self.markers['sapphire'] + len(self.stone_cards_sa)
-        self.sum_of_stones_ru = self.markers['ruby'] + len(self.stone_cards_ru)
-        self.sum_of_stones_di = self.markers['diamond'] + len(self.stone_cards_di)
-        self.sum_of_stones_on = self.markers['onyx'] + len(self.stone_cards_on)
+        self.sum_of_stones_card_markers['emerald'] = self.markers['emerald'] + len(self.stone_cards_em)
+        self.sum_of_stones_card_markers['sapphire'] = self.markers['sapphire'] + len(self.stone_cards_sa)
+        self.sum_of_stones_card_markers['ruby'] = self.markers['ruby'] + len(self.stone_cards_ru)
+        self.sum_of_stones_card_markers['diamond'] = self.markers['diamond'] + len(self.stone_cards_di)
+        self.sum_of_stones_card_markers['onyx'] = self.markers['onyx'] + len(self.stone_cards_on)
+        self.sum_of_stones_card_markers['gold'] = self.markers['gold']
 
 
 

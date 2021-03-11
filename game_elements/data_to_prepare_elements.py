@@ -87,7 +87,7 @@ prepare_cards_2_1_3_v1 = [['sapphire', 1, {'emerald': 2, 'sapphire': 2, 'ruby': 
                          ]
 
 # DANE DO PRZYGOTOWNIA KART KAMIENI DRUGIEGO POZIOMU ZA 1 PKT ZA 3 KAMIENIE
-prepare_cards_2_1_3_v2 = [['sapphire', 1, {'emeralnd': 3, 'sapphire': 2, 'onyx': 3}, '41cs'],
+prepare_cards_2_1_3_v2 = [['sapphire', 1, {'emerald': 3, 'sapphire': 2, 'onyx': 3}, '41cs'],
                         ['ruby', 1, {'sapphire': 3, 'onyx': 3, 'ruby': 2}, '42cs'],
                         ['diamond', 1, {'diamond': 2, 'ruby': 3, 'sapphire': 3}, '43cs'],
                         ['onyx', 1, {'diamond': 3, 'onyx': 2, 'emerald': 3}, '44cs'],
