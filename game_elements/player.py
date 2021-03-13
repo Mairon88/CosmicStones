@@ -8,6 +8,7 @@ class Player():
 
         self.markers = {'emerald':0, 'sapphire':0,'ruby':0, 'diamond':0, 'onyx':0, 'gold':0} # Znaczniki gracza
         self.aristo_cards = [] # Karty arystokratów gracza
+        self.safe_gold = 0
 
         self.stone_cards_em = [] # Karty kamieni gracza emerald
         self.stone_cards_sa = []  # Karty kamieni gracza sapphire
@@ -15,14 +16,14 @@ class Player():
         self.stone_cards_di = []  # Karty kamieni gracza diamond
         self.stone_cards_on = []  # Karty kamieni gracza onyx
 
-        self.sum_of_stones_card_markers = {'emerald': 0, 'sapphire': 0, 'ruby': 0, 'diamond': 0, 'onyx': 0, 'gold': 0}
+        self.sum_of_stones_card_markers = {'emerald': 0, 'sapphire': 0, 'ruby': 0, 'diamond': 0, 'onyx': 0}
 
         self.reserved_cards = [] # Zarezerwowane karty
         self.number_of_selected_markers = 0 # Zmienna pomocniczna, aktualna ilosc wybranych znacznikow z stolu podczas tury
         self.num_of_all_markers = 0
-        self.can_i_buy_sth = True # ON/OFF
 
-        self.took_card = False # Czy wybrano kartę?
+        self.took_card = True # Czy wybrano kartę?
+        self.reserve_card = False # Czy zarezerwowano kartę?
         self.bought_card = False # Czy kupiono kartę?
 
         self.width_pos = player_coordinates[0]
@@ -154,11 +155,27 @@ class Player():
                 self.markers[pos_indx_key] -= 1
                 markers[pos_indx].add_marker()
 
+    # FUNKCJA SPRAWDZA CZY STAC MNIE NA KARTE, NAJPIERW Z ZASOBÓW KART I KAMIENI A POZNIEJ Z DODATKIEM ZŁOTA
     def can_i_afford_it(self,card):
+        self.safe_gold = self.markers['gold']
         for key in card[0].stones.keys():
-            if card[0].stones[key] > self.markers[key]:
-                print("Nie stać Cię")
-                return False
+            if card[0].stones[key] > self.sum_of_stones_card_markers[key]:
+                print("Sprawdzam czy masz złoto")
+                if self.safe_gold > 0:
+                    if card[0].stones[key] > self.sum_of_stones_card_markers[key] + self.safe_gold:
+                        print("Nie stać Cię")
+                        return False
+                    else:
+                        cost = card[0].stones[key] - self.sum_of_stones_card_markers[key]
+                        if self.safe_gold >= cost:
+                            self.safe_gold -= cost
+                        else:
+                            print("Nie stać Cię masz za mało złota")
+                            return False
+                else:
+                    print("Nie stać Cię, mało brakowało")
+                    return False
+
         print("Karta kupiona")
         return True
 
@@ -167,10 +184,12 @@ class Player():
         print(card.stones)
         for key, value in card.stones.items():
             print(self.markers[key])
-            self.markers[key] -= value
-            for marker in markers_on_table:
-                if marker.name == key:
-                    marker.quantity += value
+            cost = value - (self.sum_of_stones_card_markers[key] - self.markers[key])
+            if cost > 0:
+                self.markers[key] -= cost
+                for marker in markers_on_table:
+                    if marker.name == key:
+                        marker.quantity += cost
 
     def update_sum_of_stones(self):
         self.sum_of_stones_card_markers['emerald'] = self.markers['emerald'] + len(self.stone_cards_em)
@@ -178,7 +197,7 @@ class Player():
         self.sum_of_stones_card_markers['ruby'] = self.markers['ruby'] + len(self.stone_cards_ru)
         self.sum_of_stones_card_markers['diamond'] = self.markers['diamond'] + len(self.stone_cards_di)
         self.sum_of_stones_card_markers['onyx'] = self.markers['onyx'] + len(self.stone_cards_on)
-        self.sum_of_stones_card_markers['gold'] = self.markers['gold']
+        # self.sum_of_stones_card_markers['gold'] = self.markers['gold']
 
     def count_pts(self):
         self.points += len(self.aristo_cards)*3
@@ -192,6 +211,7 @@ class Player():
             self.points += di.bonus
         for on in self.stone_cards_on:
             self.points += on.bonus
+
 
 
 

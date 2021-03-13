@@ -131,10 +131,11 @@ def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card
 
             # WARUNEK SPRAWDZAJACY CZY KURSOR MYSZY ZNAJDUJE SIE NA KARCIE
             # JEŚLI WSZYSTKIE WARUNKI SĄ SPEŁNIONE MOZNA KLIKNAC NA KARTE I ZOSTAJ ONA USUNIETA Z STOŁU
-            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and selected_action == 'buy_a_card' and current_player.can_i_afford_it(line_lvl3[pos_indx-1]):
+            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and ((selected_action == 'buy_a_card' and current_player.can_i_afford_it(line_lvl3[pos_indx-1])) or selected_action == 'reserve_a_card'):
                 print("Klikam w dobrym miejscu")
                 if len(line_lvl3[pos_indx-1]) > 0:
                     card = line_lvl3[pos_indx-1].pop()
+                    current_player.took_card = True
 
 
     # ZASADA JAK WYŻEJ ALE DLA INNYCH POZIOMÓW KART (DO ZOPTYMALIZOWANIA BO KOD SIE POWTARZA!!!)
@@ -147,10 +148,11 @@ def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card
             pos_y = coordinates_card_lvl_2[pos_indx][1]
             size_x = coordinates_card_lvl_2[pos_indx][2]
             size_y = coordinates_card_lvl_2[pos_indx][3]
-            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and selected_action == 'buy_a_card' and current_player.can_i_afford_it(line_lvl2[pos_indx - 1]):
+            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and ((selected_action == 'buy_a_card' and current_player.can_i_afford_it(line_lvl2[pos_indx-1])) or selected_action == 'reserve_a_card'):
                 print("Klikam w dobrym miejscu")
                 if len(line_lvl2[pos_indx - 1]) > 0:
                     card = line_lvl2[pos_indx - 1].pop()
+                    current_player.took_card = True
 
     for position1 in coordinates_card_lvl_1:
         pos_indx = coordinates_card_lvl_1.index(position1)
@@ -161,10 +163,11 @@ def choose_card(coordinates_card_lvl_1, coordinates_card_lvl_2, coordinates_card
             pos_y = coordinates_card_lvl_1[pos_indx][1]
             size_x = coordinates_card_lvl_1[pos_indx][2]
             size_y = coordinates_card_lvl_1[pos_indx][3]
-            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and selected_action == 'buy_a_card' and current_player.can_i_afford_it(line_lvl1[pos_indx - 1]):
+            if (pos_x < mouse_pos[0] < pos_x + size_x) and (pos_y < mouse_pos[1] < pos_y + size_y) and ((selected_action == 'buy_a_card' and current_player.can_i_afford_it(line_lvl1[pos_indx-1])) or selected_action == 'reserve_a_card'):
                 print("Klikam w dobrym miejscu")
                 if len(line_lvl1[pos_indx - 1]) > 0:
                     card = line_lvl1[pos_indx - 1].pop()
+                    current_player.took_card = True
 
     return (line_lvl1, line_lvl2, line_lvl3), card# ZWRACANA ZOSTAJE KROTKA DO ZAKTRUALIZOWANIA STANU NA STOLE
 
@@ -222,10 +225,10 @@ def choose_button(coordinates_buttons, action, mouse_pos, markers, current_playe
         elif requirement and pos_indx == 1 and not stones_in_stock_four:
             return action[1]
 
-        elif requirement and pos_indx == 2 and current_player.can_i_buy_sth:
+        elif requirement and pos_indx == 2:
             return action[2]
 
-        elif requirement and pos_indx == 3:
+        elif requirement and pos_indx == 3 and len(current_player.reserved_cards) < 3:
             return action[3]
 
     return selected_action
@@ -235,7 +238,9 @@ def player_next(list_of_players, player_turn, change_player, check_list_two, che
     if change_player:
         list_of_players[player_turn].number_of_selected_markers = 0
         list_of_players[player_turn].took_card = False
+        list_of_players[player_turn].reserve_card = False
         list_of_players[player_turn].bought_card = False
+
 
         if player_turn != len(list_of_players)-1:
             player_turn += 1
@@ -281,6 +286,17 @@ def do_the_action(selected_action, current_player, marker, card, markers):
                 current_player.pay_for_card(card, markers)
             current_player.bought_card = True
 
+    elif selected_action =='reserve_a_card':
+        if card != None:
+            current_player.reserved_cards.append(card)
+            if current_player.took_card:
+                if markers[5].quantity > 0:
+                    current_player.markers.setdefault('gold', 0)
+                    current_player.markers['gold'] += 1
+                    markers[5].sub_marker()
+                print("Rezerwuję kartę i biorę złoto")
+            current_player.took_card = False
+            current_player.reserve_card = True
 
 # JEŚLI WYBRANO AKCJE Z TRZEMA ZNACZNIKAMI A MOZNA WZIAC MNIEJ NIZ 3 TO PO WYRABNIU JEDNEGO LUB DWOCH ZMIANA GRACZA
 # JEŚLI CHOCIAZ JEDEN ZNACZNIK INNY NIZ TE CO WYBRALISMY MA WARTOSC WIEKSZA NIZ 0 TO ZRWACA FALSE
@@ -311,8 +327,8 @@ def check_conditions_to_change_player(selected_action, current_player, check_set
             else:
                 return selected_action, False
 
-    elif selected_action == 'reserve_a_card' and current_player.took_card:
-        current_player.taked_card = False
+    elif selected_action == 'reserve_a_card' and current_player.reserve_card:
+        print("Pownieniem zmienic gracza ale nie idzie")
         return '', True
 
     elif selected_action == 'buy_a_card' and current_player.bought_card:

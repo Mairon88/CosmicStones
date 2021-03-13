@@ -5,4 +5,5 @@ class Aristo():
         self.needs = needs
 
 
-
+    def __str__(self):
+        return self.name

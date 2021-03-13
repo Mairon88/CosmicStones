@@ -12,6 +12,10 @@ import game_elements.stone_cards as stc
 import random
 
 
+# UWAGA CO DO REFACTORYZACJI
+# POGRYPOWAC FUNKCJE JAKO METODY W KLASACH, KLASA STOL, KLASA GRACZ, itd. I Kupowanie karty dac w KLASIE GRACZ a nie
+# luzem w funkcjach !!!
+
 # INICJALIZACJA PYGAME
 pygame.init()
 
@@ -198,7 +202,7 @@ while True:
 
 
                 # WYBRANA AKCJA
-                if selected_action == '' or selected_action == 'buy_a_card':
+                if selected_action == '' or selected_action == 'buy_a_card' or selected_action == 'reserve_a_card':
                     selected_action = func.choose_button(coordinates_buttons, action, mouse_pos, markers, list_of_players[player_turn], selected_action)
 
                 # WYKONANIE WYBRANEJ AKCJI
@@ -221,7 +225,7 @@ while True:
                 print("==========Aktualny stan zasobów graczy===============")
                 print(f"Wybrana akcja: {selected_action}")
                 print(f"Gracz: {list_of_players[player_turn].name}")
-                print(f"Gracz: {list_of_players[player_turn].can_i_buy_sth}")
+                print(f"Gracz: {list_of_players[player_turn].reserved_cards}")
                 # print(f"Znaczniki: {list_of_players[player_turn].markers}")
                 # print(f"Ilosc wybranych znaczników: {list_of_players[player_turn].number_of_selected_markers}")
                 # print(f"Wybrane znaczniki w przypadku trzech {check_set_three}")
@@ -308,14 +312,14 @@ while True:
         #WYBÓR KARTY Z STOŁU PRZEZ GRACZA JEŚLI SPEŁNIONĄ SĄ WSZYSTKIE WARUNKI
 
         # WYŚWIETLANIE KART
-        db.draw_cards_markers(window, coordinates_a_card,0,'card')
-        db.draw_cards_markers(window, coordinates_card_lvl_1,0, 'card')
-        db.draw_cards_markers(window, coordinates_card_lvl_2,0, 'card')
-        db.draw_cards_markers(window, coordinates_card_lvl_3,0, 'card')
-        db.draw_cards_markers(window, coordinates_marker, height, 'marker', marker_size)
+        db.draw_cards_markers(window, coordinates_a_card,'ar_card', aristo_card)
+        db.draw_cards_markers(window, coordinates_card_lvl_1, 's_card', line_lvl1)
+        db.draw_cards_markers(window, coordinates_card_lvl_2, 's_card', line_lvl2)
+        db.draw_cards_markers(window, coordinates_card_lvl_3, 's_card', line_lvl3)
+        db.draw_cards_markers(window, coordinates_marker, 'marker',None, marker_size)
 
         # WYŚWIWETLANIE PRZYCISKÓW
-        db.draw_buttons(window, coordinates_buttons)
+        db.draw_buttons(window, coordinates_buttons, width)
     # WYŚWIETLANIE STOŁU GRACZA WRAZ Z ELEMENTAMI GRY
     for i in list_of_players:
         i.draw_player_board(window)

@@ -46,9 +46,6 @@ def show_text(window, width, height, myfont, myfont2,current_view, number_of_pla
             padding_x += 1
 
 
-
-
-
     elif current_view == 'result_view':
         text = 'WYNIKI'  # Tytył gry
         text_width, text_height = myfont.size(text)  # Określenie szerokości i wysokości tekstu w pikselach
