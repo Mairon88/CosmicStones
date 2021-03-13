@@ -4,3 +4,7 @@ class Stone_Card():
         self.bonus = bonus
         self.stones = stones
         self.images = images
+
+
+    def __str__(self):
+        return self.name

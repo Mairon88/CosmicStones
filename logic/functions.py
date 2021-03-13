@@ -198,7 +198,7 @@ def choose_marker(marker, coordinates_marker, mouse_pos, marker_size,selected_ac
 
 
 # WYBÓR AKCJI PRZEZ NACIŚNIECIE ODPOWIEDNIEGO PRZYCISKU
-def choose_button(coordinates_buttons, action, mouse_pos, markers, current_player):
+def choose_button(coordinates_buttons, action, mouse_pos, markers, current_player, selected_action):
 
     for position in coordinates_buttons:
         pos_indx = coordinates_buttons.index(position)
@@ -228,7 +228,7 @@ def choose_button(coordinates_buttons, action, mouse_pos, markers, current_playe
         elif requirement and pos_indx == 3:
             return action[3]
 
-    return ''
+    return selected_action
 
 # OKREŚLANIE CZYJA KOLEJ
 def player_next(list_of_players, player_turn, change_player, check_list_two, check_set_three):
@@ -246,7 +246,7 @@ def player_next(list_of_players, player_turn, change_player, check_list_two, che
     return player_turn, change_player, check_list_two, check_set_three
 
 # WYKONANIE ODPOWIEDNIEJ AKCJI
-def do_the_action(selected_action, current_player, marker, card):
+def do_the_action(selected_action, current_player, marker, card, markers):
     if selected_action == 'take_3_markers' and marker != None and current_player.number_of_selected_markers < 3:
         current_player.markers.setdefault(marker, 0)
         current_player.markers[marker] += 1
@@ -266,14 +266,19 @@ def do_the_action(selected_action, current_player, marker, card):
         if card != None:
             if card.name == 'emerald':
                 current_player.stone_cards_em.append(card)
+                current_player.pay_for_card(card,markers)
             elif card.name == 'sapphire':
                 current_player.stone_cards_sa.append(card)
+                current_player.pay_for_card(card, markers)
             elif card.name == 'ruby':
                 current_player.stone_cards_ru.append(card)
+                current_player.pay_for_card(card, markers)
             elif card.name == 'diamond':
                 current_player.stone_cards_di.append(card)
+                current_player.pay_for_card(card, markers)
             elif card.name == 'onyx':
                 current_player.stone_cards_on.append(card)
+                current_player.pay_for_card(card, markers)
             current_player.bought_card = True
 
 

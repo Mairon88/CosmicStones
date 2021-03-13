@@ -1,4 +1,5 @@
-import  pygame
+import pygame
+
 
 class Player():
     def __init__(self, name, player_coordinates, width, height):
@@ -19,7 +20,8 @@ class Player():
         self.reserved_cards = [] # Zarezerwowane karty
         self.number_of_selected_markers = 0 # Zmienna pomocniczna, aktualna ilosc wybranych znacznikow z stolu podczas tury
         self.num_of_all_markers = 0
-        self.can_i_buy_sth = True
+        self.can_i_buy_sth = True # ON/OFF
+
         self.took_card = False # Czy wybrano kartę?
         self.bought_card = False # Czy kupiono kartę?
 
@@ -45,6 +47,7 @@ class Player():
         self.reserved_stone_cards_padding_x = 0
         self.num_of_card_padding_x = 0
         self.num_of_markers_padding_x = 0
+
 
     def draw_player_board(self, window):
         pygame.draw.rect(window, (0, 50, 50), (self.width_pos, self.height_pos, self.width_size, self.height_size))  # P1 AREA
@@ -159,37 +162,15 @@ class Player():
         print("Karta kupiona")
         return True
 
-
-
-
-        # print("Czy mnie na to stać???")
-        # print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Wymagania dla kart I poziomu >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        # for i in line_lvl1:
-        #     print(i[0].name, i[0].stones)
-        #     for key_lvl1 in i[0].stones.keys():
-        #         if i[0].stones[key_lvl1] > self.sum_of_stones_card_markers[key_lvl1]:
-        #             print("Nie stać Cię")
-        #             continue
-        #     print("Stać Cię na tą kartę")
-        # print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Wymagania dla kart II poziomu >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        # for j in line_lvl2:
-        #     print(j[0].name, j[0].stones)
-        #     for key_lvl2 in j[0].stones.keys():
-        #         if j[0].stones[key_lvl2] > self.sum_of_stones_card_markers[key_lvl2]:
-        #             print("Nie stać Cię")
-        #             continue
-        #         print("Stać Cię na tą kartę")
-        # print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Wymagania dla kart III poziomu >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        # for k in line_lvl3:
-        #     print(k[0].name, k[0].stones)
-        #     for key_lvl3 in k[0].stones.keys():
-        #         if k[0].stones[key_lvl3] > self.sum_of_stones_card_markers[key_lvl3]:
-        #             print("Nie stać Cię")
-        #             break
-        #     print("Stać Cię na tą kartę")
-
-        # JEŚLI WARUNKI ZOSTANA SPEŁNIONE TO
-        # self.can_i_buy_sth = True
+    def pay_for_card(self, card, markers_on_table):
+        print("Muszę oddać")
+        print(card.stones)
+        for key, value in card.stones.items():
+            print(self.markers[key])
+            self.markers[key] -= value
+            for marker in markers_on_table:
+                if marker.name == key:
+                    marker.quantity += value
 
     def update_sum_of_stones(self):
         self.sum_of_stones_card_markers['emerald'] = self.markers['emerald'] + len(self.stone_cards_em)
@@ -198,6 +179,21 @@ class Player():
         self.sum_of_stones_card_markers['diamond'] = self.markers['diamond'] + len(self.stone_cards_di)
         self.sum_of_stones_card_markers['onyx'] = self.markers['onyx'] + len(self.stone_cards_on)
         self.sum_of_stones_card_markers['gold'] = self.markers['gold']
+
+    def count_pts(self):
+        self.points += len(self.aristo_cards)*3
+        for em in self.stone_cards_em:
+            self.points += em.bonus
+        for sa in self.stone_cards_sa:
+            self.points += sa.bonus
+        for ru in self.stone_cards_ru:
+            self.points += ru.bonus
+        for di in self.stone_cards_di:
+            self.points += di.bonus
+        for on in self.stone_cards_on:
+            self.points += on.bonus
+
+
 
 
 

@@ -15,6 +15,8 @@ import random
 # INICJALIZACJA PYGAME
 pygame.init()
 
+var = True
+
 # INICJALIZACJA CZCIONEK
 pygame.font.init()  # Inicjalizacja czionek
 myfont = pygame.font.SysFont('ARIAL', 40)   #Wczytanie czcionki
@@ -196,11 +198,17 @@ while True:
 
 
                 # WYBRANA AKCJA
-                if selected_action == '':
-                    selected_action = func.choose_button(coordinates_buttons, action, mouse_pos, markers, list_of_players[player_turn])
+                if selected_action == '' or selected_action == 'buy_a_card':
+                    selected_action = func.choose_button(coordinates_buttons, action, mouse_pos, markers, list_of_players[player_turn], selected_action)
 
                 # WYKONANIE WYBRANEJ AKCJI
-                func.do_the_action(selected_action, list_of_players[player_turn], marker, card)
+                func.do_the_action(selected_action, list_of_players[player_turn], marker, card, markers)
+
+                # ZAKTUALIZOWANIE PUNKTÓW GRACZA
+                if list_of_players[player_turn].bought_card:
+                    list_of_players[player_turn].points = 0
+                    list_of_players[player_turn].count_pts()
+
 
                 # SRRAWDZENIE CZY OSIĄGNIĘTO WARUNKI DO ZMIANY GRACZA
                 selected_action, change_player = func.check_conditions_to_change_player(selected_action, list_of_players[player_turn], check_set_three, markers, mouse_pos)
@@ -213,6 +221,7 @@ while True:
                 print("==========Aktualny stan zasobów graczy===============")
                 print(f"Wybrana akcja: {selected_action}")
                 print(f"Gracz: {list_of_players[player_turn].name}")
+                print(f"Gracz: {list_of_players[player_turn].can_i_buy_sth}")
                 # print(f"Znaczniki: {list_of_players[player_turn].markers}")
                 # print(f"Ilosc wybranych znaczników: {list_of_players[player_turn].number_of_selected_markers}")
                 # print(f"Wybrane znaczniki w przypadku trzech {check_set_three}")
@@ -226,7 +235,6 @@ while True:
                 # print(f"SUMA KAMIENI KARTY Z  ZNACZNIKAMI:{list_of_players[player_turn].sum_of_stones_card_markers}")
                 print("=====================================================")
 
-                # JEŚLI OSIĄGNIETO WARUNKI ZMIANY GRACZA TO TUTAJ TO NASTĄPI
                 player_turn, change_player, check_list_two, check_set_three = func.player_next(list_of_players, player_turn, change_player, check_list_two, check_set_three)
 
     # WYŚWIETLANIE TEKSTÓW NA EKRANIE
@@ -280,12 +288,23 @@ while True:
                                                            card_s_height_size, padding_x, padding_y, 6, 4, 'marker')
 
             coordinates_buttons = func.button_coordinates(width, height, card_a_height_size, card_s_width_size, padding_x)
+
+
             prepare_game_elements = False
+
+
 
         # POBIERANIE KART Z STOSU I UZUPEŁNIANIE NA STOLE JEŚLI KTÓREJŚ BRAKUJE
         update_cards = func.place_the_card(card_lvl_1, card_lvl_2, card_lvl_3, line_lvl1, line_lvl2, line_lvl3)
         (card_lvl_1, card_lvl_2, card_lvl_3, line_lvl1, line_lvl2, line_lvl3) = update_cards
 
+        if var:
+            for i in line_lvl1:
+                print(i[0].stones)
+            var = False
+
+        # AKTUALIZACJA INFORMACJI O TYM CZY GRACZA STAC CHOCIAZ NA JEDNA KARTE, JESLI NIE TO OPCJA KUPOWANIA JEST WYLACZONA
+        # list_of_players[player_turn].check_can_i_buy_sth(line_lvl1, line_lvl2, line_lvl3)
         #WYBÓR KARTY Z STOŁU PRZEZ GRACZA JEŚLI SPEŁNIONĄ SĄ WSZYSTKIE WARUNKI
 
         # WYŚWIETLANIE KART
