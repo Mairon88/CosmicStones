@@ -1,10 +1,5 @@
 import pygame
 
-
-
-
-
-
 # FUNKCJA RYSUJĄCA KARTY I ZNACZNIKI NA PLANSZY GŁOWNEJ
 def draw_cards_markers(window, coordinates, element,cards_info, marker_size=0):
     list_of_markers = ['szm','sza', 'ru', 'di', 'on', 'zł']  # ZMIENNA POMOCNICZA DO WYKASOWANIA

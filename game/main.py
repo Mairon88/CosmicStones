@@ -9,6 +9,7 @@ import logic.functions as func
 import game_elements.data_to_prepare_elements as pele
 import game_elements.data_to_prepare_elements as datp
 import game_elements.stone_cards as stc
+import game_elements.player as plr
 import random
 
 
@@ -37,6 +38,7 @@ number_of_players = 2  # Liczba graczy
 list_of_players = [] # Lista przechowująca obiekty graczy
 game_over = False
 game_run = True
+last_round = False
 confirm_name = 0 # Zmienna pomocnicza do potwierdzenia wprowadzenia imienia gracza
 prepare_game_elements = True    # Zmienna to przygotowania elementów
 player_turn = 0 #indeks aktualnego gracza z listy graczy
@@ -97,20 +99,40 @@ coordinates_buttons = []
 # WSPÓŁRZĘDNE ZNACZNIKÓW NA EKRANIE
 coordinates_marker = []
 
+# TESTOWE ZAŁADOWANIE OBRAZKA
+# img = pygame.image.load("/home/mariusz/PycharmProjects/five_stones/images/card.png")
+# img = pygame.transform.scale(img, (101, 200))
+
+
+
 # GŁOWNE EKRANY GRY
 list_view = ['start_view', 'number_of_players_view', 'player_names_view', 'game_view', 'result_view']
 current_view = list_view[0]
 
+
+
 # GŁÓWNA PĘTLA GRY
+
 
 while True:
     window.fill((0, 0, 0))
-
     # OBŁSUGA ZDARZEŃ
     # np.wyjście z gry i przejście miedzy ekranami
 
+
+
+    if current_view == 'game_view' and last_round and player_turn <= over_num_pl:
+        print("W tym momencie wyłączamy grę\n" * 10)
+        game_run = False
+        game_over = True
+
+
     # PĘTLA ZDARZEŃ
+
     for event in GAME_EVENTS.get():
+
+
+
 
         # ZDANIERZA ZWIAZANE Z PRZYCIŚNIECIEM KLAWICZA NA KLAWIATRZUE
         if event.type == pygame.KEYDOWN:
@@ -144,12 +166,17 @@ while True:
                             confirm_name = 0
 
                 elif current_view == "game_view" and game_over and game_run == False:
-                    current_view = list_view[4]
-                    prepare_game_elements = True
-                    char.word = "gracz 1"
+                    print("TUTAJ POWINIENEM PODAĆ FUNCKJE POKAZUJACA WYNIKI")
+                    current_view = list_view[1]
+                    confirm_name = 0
+                    player_turn = 0
 
                 # PO ZAKOŃCZENIU GRY I WIDOKU WYNIKÓW PO WCIŚNiECIU ENTER GRA ROZPOCZNIE SIE PONOWNIE
                 elif current_view == "result_view":
+                    for player in list_of_players:
+                        indx = list_of_players.index(player)
+                        player = plr.Player(player.name, player_coordinates[indx], width, height)
+                    print("TUTAJ POWINIENEM PODAĆ FUNCKJE RESETUJĄCA ZASOBY I WYNIKA GRACZY JESLI MAJA BYC CI SAMI")
                     current_view = list_view[3]
                     player_turn = 0
 
@@ -180,11 +207,9 @@ while True:
         if event.type == pygame.MOUSEBUTTONUP:
             if current_view == 'game_view':
 
+
                 # ZWRACA POZYCJE KURSORA W PIXELACH
                 mouse_pos = pygame.mouse.get_pos()
-
-                # PRZELICZENIE I ZAKTUALIZOWANIE ZASOBÓW GRACZA
-                list_of_players[player_turn].update_sum_of_stones()
 
 
                 # PO KLIKNIECIU NA KARTE ZOSTAJE ZAKTUALIZOWANY STAN KART NA STOLE
@@ -208,10 +233,26 @@ while True:
                 # WYKONANIE WYBRANEJ AKCJI
                 func.do_the_action(selected_action, list_of_players[player_turn], marker, card, markers)
 
-                # ZAKTUALIZOWANIE PUNKTÓW GRACZA
-                if list_of_players[player_turn].bought_card:
-                    list_of_players[player_turn].points = 0
-                    list_of_players[player_turn].count_pts()
+
+                # PRZELICZENIE I ZAKTUALIZOWANIE ZASOBÓW GRACZA
+                list_of_players[player_turn].update_sum_of_stones()
+
+
+                # SPRAWDZENIE CZY MOZNA PRZYJAC ARYSTOKRATĘ i zaktualizowanie kart arystokratów na stole
+                aristo_card, coordinates_a_card = list_of_players[player_turn].invate_aristo(aristo_card, coordinates_a_card)
+
+                # ZAKTUALIZOWANIE LICZBY PUNKTÓW
+                list_of_players[player_turn].points = 16
+                # list_of_players[player_turn].count_pts()
+
+                # SPRAWDZENIE CZY AKTUALNY GRACZ UZYSKAŁ MIN 15 PKT DO KONCZENIA GRY
+                if not last_round:
+                    last_round = func.is_this_last_round(list_of_players, player_turn)
+                    if last_round:
+                        over_num_pl = player_turn
+                        print("ROzpoczełą sie ostatnia runda")
+
+
 
 
                 # SRRAWDZENIE CZY OSIĄGNIĘTO WARUNKI DO ZMIANY GRACZA
@@ -297,15 +338,10 @@ while True:
             prepare_game_elements = False
 
 
-
         # POBIERANIE KART Z STOSU I UZUPEŁNIANIE NA STOLE JEŚLI KTÓREJŚ BRAKUJE
         update_cards = func.place_the_card(card_lvl_1, card_lvl_2, card_lvl_3, line_lvl1, line_lvl2, line_lvl3)
         (card_lvl_1, card_lvl_2, card_lvl_3, line_lvl1, line_lvl2, line_lvl3) = update_cards
 
-        if var:
-            for i in line_lvl1:
-                print(i[0].stones)
-            var = False
 
         # AKTUALIZACJA INFORMACJI O TYM CZY GRACZA STAC CHOCIAZ NA JEDNA KARTE, JESLI NIE TO OPCJA KUPOWANIA JEST WYLACZONA
         # list_of_players[player_turn].check_can_i_buy_sth(line_lvl1, line_lvl2, line_lvl3)
@@ -340,6 +376,5 @@ while True:
         window.blit(num_of_card_l2, (width * 0.305, height * 0.45))
         num_of_card_l1 = myfont2.render(str(len(card_lvl_1)), True, (250, 255, 255))
         window.blit(num_of_card_l1, (width * 0.305, height * 0.65))
-
 
     pygame.display.update()
