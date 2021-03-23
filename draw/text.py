@@ -4,7 +4,7 @@ import pygame.event as GAME_EVENTS
 import draw.characters as char
 
 def show_text(window, width, height, myfont, myfont2,current_view, number_of_players,
-              confirm, player_turn, list_of_players, markers, card_lvl_1, card_lvl_2, card_lvl_3):
+              confirm, player_turn, list_of_players, markers, card_lvl_1, card_lvl_2, card_lvl_3, result):
     if current_view == 'start_view':
         text = 'COSMIC STONES'  # Tytył gry
         text_width, text_height = myfont.size(text)  # Określenie szerokości i wysokości tekstu w pikselach
@@ -47,10 +47,21 @@ def show_text(window, width, height, myfont, myfont2,current_view, number_of_pla
 
 
     elif current_view == 'result_view':
-        text = 'WYNIKI'  # Tytył gry
+        text = 'WYNIKI:'  # Tytył gry
         text_width, text_height = myfont.size(text)  # Określenie szerokości i wysokości tekstu w pikselach
         text_x_y = (width / 2 - (text_width / 2), 50)  # Położenie tekstu na ekranie
         game_name = myfont.render(text.upper(), True, (250, 255, 255))
         window.blit(game_name, text_x_y)
+
+        z = 1
+        for r in result:
+            text = str(z)+". "+"GRACZ: "+str(r.name)+", PUNKTY: "+str(r.points)  # Tytył gry
+            text_width, text_height = myfont.size(text)  # Określenie szerokości i wysokości tekstu w pikselach
+            text_x_y = (width / 2 - (text_width / 2), 100+z*text_height*1.5)  # Położenie tekstu na ekranie
+            game_name = myfont.render(text.upper(), True, (250, 255, 255))
+            window.blit(game_name, text_x_y)
+            z +=1
+
+
 
 

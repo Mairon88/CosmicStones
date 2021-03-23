@@ -99,15 +99,16 @@ coordinates_buttons = []
 # WSPÓŁRZĘDNE ZNACZNIKÓW NA EKRANIE
 coordinates_marker = []
 
-# TESTOWE ZAŁADOWANIE OBRAZKA
-# img = pygame.image.load("/home/mariusz/PycharmProjects/five_stones/images/card.png")
-# img = pygame.transform.scale(img, (101, 200))
+
 
 
 
 # GŁOWNE EKRANY GRY
 list_view = ['start_view', 'number_of_players_view', 'player_names_view', 'game_view', 'result_view']
 current_view = list_view[0]
+
+
+result = []
 
 
 
@@ -119,19 +120,9 @@ while True:
     # OBŁSUGA ZDARZEŃ
     # np.wyjście z gry i przejście miedzy ekranami
 
-
-
-    if current_view == 'game_view' and last_round and player_turn <= over_num_pl:
-        print("W tym momencie wyłączamy grę\n" * 10)
-        game_run = False
-        game_over = True
-
-
     # PĘTLA ZDARZEŃ
 
     for event in GAME_EVENTS.get():
-
-
 
 
         # ZDANIERZA ZWIAZANE Z PRZYCIŚNIECIEM KLAWICZA NA KLAWIATRZUE
@@ -153,6 +144,10 @@ while True:
                 elif current_view == "number_of_players_view" and number_of_players in [2, 3, 4]:
                     current_view = list_view[2]
                     list_of_players = []    # ZRESETOWANIE LISTY GRACZY
+                    result = []
+                    game_run = True
+                    game_over = False
+                    last_round = False
 
                 elif current_view == "player_names_view":
 
@@ -167,25 +162,23 @@ while True:
 
                 elif current_view == "game_view" and game_over and game_run == False:
                     print("TUTAJ POWINIENEM PODAĆ FUNCKJE POKAZUJACA WYNIKI")
-                    current_view = list_view[1]
-                    confirm_name = 0
-                    player_turn = 0
 
-                # PO ZAKOŃCZENIU GRY I WIDOKU WYNIKÓW PO WCIŚNiECIU ENTER GRA ROZPOCZNIE SIE PONOWNIE
+                    result = func.show_result(result,list_of_players)
+                    for i in result:
+                        print(i.name, i.points)
+                    current_view = list_view[4]
+                    prepare_game_elements = True
+                    game_run = True
+                    char.word = "gracz 1"
+
+
+                # PO ZAKOŃCZENIU GRY POWRÓT DO WYBORU ILOSCI GRACZY
                 elif current_view == "result_view":
-                    for player in list_of_players:
-                        indx = list_of_players.index(player)
-                        player = plr.Player(player.name, player_coordinates[indx], width, height)
-                    print("TUTAJ POWINIENEM PODAĆ FUNCKJE RESETUJĄCA ZASOBY I WYNIKA GRACZY JESLI MAJA BYC CI SAMI")
-                    current_view = list_view[3]
-                    player_turn = 0
-
-            # PO ZAKOŃCZENIU GRY POWRÓT DO WYBORU ILOSCI GRACZY
-            if event.key == pygame.K_BACKSPACE:
-                if current_view == "result_view":
                     current_view = list_view[1]
                     confirm_name = 0
                     player_turn = 0
+
+
 
             # ZAMKNIĘCIE PROGRAMU
             if event.key == pygame.K_ESCAPE:
@@ -204,7 +197,7 @@ while True:
             char.characters(event, 'player_names')
 
         # PRZYCIŚNIECIE I ZWOLNIENIE PRZYCISKU MYSZY SPOWODUJE DALSZE DZIAŁANIA
-        if event.type == pygame.MOUSEBUTTONUP:
+        if event.type == pygame.MOUSEBUTTONUP and game_run:
             if current_view == 'game_view':
 
 
@@ -242,8 +235,8 @@ while True:
                 aristo_card, coordinates_a_card = list_of_players[player_turn].invate_aristo(aristo_card, coordinates_a_card)
 
                 # ZAKTUALIZOWANIE LICZBY PUNKTÓW
-                list_of_players[player_turn].points = 16
-                # list_of_players[player_turn].count_pts()
+                list_of_players[player_turn].points = 0
+                list_of_players[player_turn].count_pts()
 
                 # SPRAWDZENIE CZY AKTUALNY GRACZ UZYSKAŁ MIN 15 PKT DO KONCZENIA GRY
                 if not last_round:
@@ -283,8 +276,9 @@ while True:
                 player_turn, change_player, check_list_two, check_set_three = func.player_next(list_of_players, player_turn, change_player, check_list_two, check_set_three)
 
     # WYŚWIETLANIE TEKSTÓW NA EKRANIE
-    pt.show_text(window, width, height, myfont, myfont2, current_view, number_of_players, confirm_name, player_turn,
-                 list_of_players, markers, card_lvl_1, card_lvl_2, card_lvl_3)
+    if game_run:
+        pt.show_text(window, width, height, myfont, myfont2, current_view, number_of_players, confirm_name, player_turn,
+                     list_of_players, markers, card_lvl_1, card_lvl_2, card_lvl_3, result)
 
     # ZAPISANIE ILOŚCI GRACZY DO ZMIENNEJ
     if current_view == "number_of_players_view":
@@ -301,6 +295,8 @@ while True:
         if prepare_game_elements:
             markers = func.create_markers(pele.prepare_markers, number_of_players)
             aristo_card = func.create_aristo(pele.prepare_aristo_card, number_of_players)
+            card_lvl_3, card_lvl_2, card_lvl_1 = [], [], []
+            line_lvl3, line_lvl2, line_lvl1 = [[], [], [], []],  [[], [], [], []],  [[], [], [], []]
 
             for cards in datp.list_cards_lvl_3:
                 for card in cards:
@@ -348,33 +344,54 @@ while True:
         #WYBÓR KARTY Z STOŁU PRZEZ GRACZA JEŚLI SPEŁNIONĄ SĄ WSZYSTKIE WARUNKI
 
         # WYŚWIETLANIE KART
-        db.draw_cards_markers(window, coordinates_a_card,'ar_card', aristo_card)
-        db.draw_cards_markers(window, coordinates_card_lvl_1, 's_card', line_lvl1)
-        db.draw_cards_markers(window, coordinates_card_lvl_2, 's_card', line_lvl2)
-        db.draw_cards_markers(window, coordinates_card_lvl_3, 's_card', line_lvl3)
-        db.draw_cards_markers(window, coordinates_marker, 'marker',None, marker_size)
+        if game_run:
+            db.draw_cards_markers(window, coordinates_a_card,'ar_card', aristo_card)
+            db.draw_cards_markers(window, coordinates_card_lvl_1, 's_card_1', line_lvl1)
+            db.draw_cards_markers(window, coordinates_card_lvl_2, 's_card_2', line_lvl2)
+            db.draw_cards_markers(window, coordinates_card_lvl_3, 's_card_3', line_lvl3)
+            db.draw_cards_markers(window, coordinates_marker, 'marker',None, marker_size)
 
-        # WYŚWIWETLANIE PRZYCISKÓW
-        db.draw_buttons(window, coordinates_buttons, width)
+            # WYŚWIWETLANIE PRZYCISKÓW
+            db.draw_buttons(window, coordinates_buttons, width)
     # WYŚWIETLANIE STOŁU GRACZA WRAZ Z ELEMENTAMI GRY
-    for i in list_of_players:
-        i.draw_player_board(window)
-        i.draw_player_text(window)
-        i.draw_player_stone_cards(window)
-        i.draw_player_markers(window)
-        i.draw_player_reserved_stone_cards(window)
-        i.draw_player_gold_marker(window)
+
+
+        for i in list_of_players:
+            i.draw_player_board(window)
+            i.draw_player_text(window)
+            i.draw_player_stone_cards(window)
+            i.draw_player_markers(window)
+            i.draw_player_reserved_stone_cards(window)
+            i.draw_player_gold_marker(window)
 
 
     # POMOCNICZNE WYŚWIETLANIE TEKSTU
-    if current_view =="game_view":
+    if current_view =="game_view" and game_run:
         player = myfont.render(str(player_turn+1), True, (250, 255, 255))
         window.blit(player, (width/2, height*0.01))
         num_of_card_l3 = myfont2.render(str(len(card_lvl_3)), True, (250, 255, 255))
-        window.blit(num_of_card_l3, (width * 0.305, height * 0.25))
+        window.blit(num_of_card_l3, (width * 0.305, height * 0.30))
         num_of_card_l2 = myfont2.render(str(len(card_lvl_2)), True, (250, 255, 255))
-        window.blit(num_of_card_l2, (width * 0.305, height * 0.45))
+        window.blit(num_of_card_l2, (width * 0.305, height * 0.50))
         num_of_card_l1 = myfont2.render(str(len(card_lvl_1)), True, (250, 255, 255))
-        window.blit(num_of_card_l1, (width * 0.305, height * 0.65))
+        window.blit(num_of_card_l1, (width * 0.305, height * 0.70))
+
+    if current_view == 'game_view' and last_round and player_turn <= over_num_pl:
+        game_run = False
+        game_over = True
+        text = "KONIEC GRY !!!"  # Tytył gry
+        text_width, text_height = myfont.size(text)  # Określenie szerokości i wysokości tekstu w pikselach
+        text_x_y = (width / 2 - (text_width / 2), 50)  # Położenie tekstu na ekranie
+        game_name = myfont.render(text.upper(), True, (250, 255, 255))
+        window.blit(game_name, text_x_y)
+        text2 = "WCIŚNIJ ENTER"  # Tytył gry
+        text_width, text_height = myfont.size(text2)  # Określenie szerokości i wysokości tekstu w pikselach
+        text_x_y = (width / 2 - (text_width / 2), 100)  # Położenie tekstu na ekranie
+        game_name = myfont.render(text2.upper(), True, (250, 255, 255))
+        window.blit(game_name, text_x_y)
+
+
+
 
     pygame.display.update()
+

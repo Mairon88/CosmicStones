@@ -55,19 +55,30 @@ class Player():
         pygame.draw.rect(window, (0, 50, 50), (self.width_pos, self.height_pos, self.width_size, self.height_size))  # P1 AREA
 
     def draw_player_markers(self, window):
+        list_of_markers = ['emerald_m.png', 'sapphire_m.png', 'ruby_m.png', 'diamond_m.png', 'onyks_m.png',
+                           'gold_m.png']
         for i in range(5):
             if len(self.markers_coordinates) < 5:
                 self.markers_coordinates.append([self.width_pos+self.marker_size*1.25+self.marker_padding_x*(self.marker_size*2+self.width*0.01),self.height_pos+self.height*0.23, self.marker_size])
-            pygame.draw.circle(window, (150, 150, 150), (self.width_pos+self.marker_size*1.25+self.marker_padding_x*(self.marker_size*2+self.width*0.01),self.height_pos+self.height*0.23), self.marker_size, 0)
+            markers = pygame.draw.circle(window, (0, 0, 0), (self.width_pos+self.marker_size*1.25+self.marker_padding_x*(self.marker_size*2+self.width*0.01),self.height_pos+self.height*0.23), self.marker_size, 1)
+            img = pygame.image.load('/home/mariusz/PycharmProjects/five_stones/images/' + list_of_markers[i])
+            img = pygame.transform.scale(img, (int(self.marker_size*2), int(self.marker_size*2)))
+            window.blit(img, markers)
             self.marker_padding_x += 1
         self.marker_padding_x = 0
 
     def draw_player_gold_marker(self, window):
+        list_of_markers = ['emerald_m.png', 'sapphire_m.png', 'ruby_m.png', 'diamond_m.png', 'onyks_m.png',
+                           'gold_m.png']
         if len(self.gold_markers_coordinates) < 1:
-            self.gold_markers_coordinates.append([self.width_pos+self.marker_size*1.25+(self.marker_size*7+self.width*0.01),self.height_pos+self.height*0.343+ self.marker_size, self.marker_size])
-        pygame.draw.circle(window, (150, 150, 150), (self.width_pos+self.marker_size*1.25+(self.marker_size*7+self.width*0.01),self.height_pos+self.height*0.343+self.marker_size), self.marker_size, 0)
+            self.gold_markers_coordinates.append([self.width_pos+self.marker_size*1.25+(self.marker_size*8+self.width*0.01),self.height_pos+self.height*0.343+ self.marker_size, self.marker_size])
+        markers = pygame.draw.circle(window, (0, 0, 0), (self.width_pos+self.marker_size*1.25+(self.marker_size*9.5+self.width*0.01),self.height_pos+self.height*0.343+self.marker_size), self.marker_size, 0)
+        img = pygame.image.load('/home/mariusz/PycharmProjects/five_stones/images/' + list_of_markers[-1])
+        img = pygame.transform.scale(img, (int(self.marker_size * 2), int(self.marker_size * 2)))
+        window.blit(img, markers)
 
     def draw_player_stone_cards(self, window):
+        list_of_cards = ['em_pl.png', 'sa_pl.png', 'ru_pl.png', 'di_pl.png', 'on_pl.png']
         for i in range(5):
             # DODANIE WSPÓŁRZĘDNYCH KART GRACZA DO LISTY
             if len(self.stone_cards_coordinates) < 5:
@@ -75,9 +86,12 @@ class Player():
                                 (self.stone_cards_padding_x*(self.stone_cards_width+self.width*0.01)),self.height_pos+self.height*0.05,
                                                     self.stone_cards_width, self.stone_cards_height])
             # RYSOWANIE KART GRACZA
-            pygame.draw.rect(window, (200, 150, 50),(self.width_pos+self.stone_cards_width*0.13+
+            cards = pygame.draw.rect(window, (200, 150, 50),(self.width_pos+self.stone_cards_width*0.13+
                             (self.stone_cards_padding_x*(self.stone_cards_width+self.width*0.01)), self.height_pos+self.height*0.05,
-                            self.stone_cards_width, self.stone_cards_height))  # P1 AREA
+                            self.stone_cards_width, self.stone_cards_height),1)  # P1 AREA
+            img = pygame.image.load('/home/mariusz/PycharmProjects/five_stones/images/' + list_of_cards[i])
+            img = pygame.transform.scale(img, (int(self.stone_cards_width), int(self.stone_cards_height)))
+            window.blit(img, cards)
             self.stone_cards_padding_x += 1
         self.stone_cards_padding_x = 0
 
@@ -87,12 +101,12 @@ class Player():
             # DODANIE WSPÓŁRZĘDNYCH KART GRACZA DO LISTY
             if len(self.reserved_cards_coordinates) < 3:
                 self.reserved_cards_coordinates.append([self.width_pos+self.stone_cards_width*0.13+
-                                (self.reserved_stone_cards_padding_x*(self.stone_cards_width+self.width*0.01)),self.height_pos+self.height*0.31,
-                                                    self.stone_cards_width, self.stone_cards_height])
+                                (self.reserved_stone_cards_padding_x*(self.stone_cards_width+self.width*0.025)),self.height_pos+self.height*0.31,
+                                                    self.stone_cards_width*1.5, self.stone_cards_height*1.35])
             # RYSOWANIE KART GRACZA
             pygame.draw.rect(window, (200, 150, 50),(self.width_pos+self.stone_cards_width*0.13+
-                            (self.reserved_stone_cards_padding_x*(self.stone_cards_width+self.width*0.01)), self.height_pos+self.height*0.31,
-                            self.stone_cards_width, self.stone_cards_height),1)  # P1 AREA
+                            (self.reserved_stone_cards_padding_x*(self.stone_cards_width+self.width*0.025)), self.height_pos+self.height*0.31,
+                            self.stone_cards_width*1.5, self.stone_cards_height*1.35),1)  # P1 AREA
             self.reserved_stone_cards_padding_x += 1
         self.reserved_stone_cards_padding_x = 0
 
@@ -101,6 +115,7 @@ class Player():
         pass
 
     def draw_player_text(self, window):
+        name_list = ['EME', 'SAP', 'RUB', 'DIA', 'ONY']
         myfont = pygame.font.SysFont('ARIAL', 25)
         myfont2 = pygame.font.SysFont('ARIAL', 20)
         myfont3 = pygame.font.SysFont('ARIAL', 15)
@@ -116,9 +131,18 @@ class Player():
 
         list_width_len_cards = [len(self.stone_cards_em),len(self.stone_cards_sa),len(self.stone_cards_ru),len(self.stone_cards_di),len(self.stone_cards_on)]
 
+        # WYŚWIETLANIE ILOSCI KART DANEGO KAMIENIA
         for i in range(5):
             num_of_cards = myfont2.render("x" + str(list_width_len_cards[i]), True, (250, 255, 255))
             window.blit(num_of_cards, (self.width_pos+self.stone_cards_width*0.13+self.num_of_card_padding_x*(self.stone_cards_width+self.width*0.01), self.height_pos+self.height*0.15))
+            self.num_of_card_padding_x += 1
+        self.num_of_card_padding_x = 0
+
+        # ROBOCZY OPIS KART
+
+        for i in range(5):
+            name_of_cards = myfont2.render(str(name_list[i]), True, (250, 255, 255))
+            window.blit(name_of_cards, (self.width_pos+self.stone_cards_width*0.3+self.num_of_card_padding_x*(self.stone_cards_width+self.width*0.01), self.height_pos+self.height*0.08))
             self.num_of_card_padding_x += 1
         self.num_of_card_padding_x = 0
 
@@ -130,7 +154,7 @@ class Player():
                 self.num_of_markers_padding_x += 1
             elif i == 'gold':
                 window.blit(num_of_markers, (
-                self.width_pos + self.stone_cards_width * 0.13 + 3 * (
+                self.width_pos + self.stone_cards_width * 0.13 + 4 * (
                             self.stone_cards_width + self.width * 0.01), self.height_pos + self.height * 0.413))
                 self.num_of_markers_padding_x += 1
 
@@ -139,26 +163,29 @@ class Player():
         c = 0
 
 
+
         for i in self.reserved_cards_coordinates:
             if self.reserved_cards[c] != []:
-                pygame.draw.rect(window, (150, 150, 150), i)
-
-                text = self.reserved_cards[c][0].name  # nazwa karty zgodnie z kamieniem
-                text_x_y = (i)  # Położenie tekstu na ekranie
-                game_name = myfont3.render(text, True, (250, 255, 255))
-                window.blit(game_name, text_x_y)
-                z = 0
-                text_bonus = str("bonus: "+str(self.reserved_cards[c][0].bonus)) # Tytył gry
-                text_x_y = (i[0], i[1] + 25 + z * 25)  # Położenie tekstu na ekranie
-                game_name = myfont3.render(text_bonus, True, (250, 255, 255))
-                window.blit(game_name, text_x_y)
-                for key, value in self.reserved_cards[c][0].stones.items():
-                    text = str(key)+" "+str(value)  # Tytył gry
-
-                    text_x_y = (i[0],i[1]+50+z*25)  # Położenie tekstu na ekranie
-                    game_name = myfont3.render(text, True, (250, 255, 255))
-                    window.blit(game_name, text_x_y)
-                    z += 1
+                draw_card = pygame.draw.rect(window, (150, 150, 150), i)
+                img = pygame.image.load('/home/mariusz/PycharmProjects/five_stones/images/' + self.reserved_cards[c][0].images)
+                img = pygame.transform.scale(img, (int(i[2]), int(i[3])))
+                window.blit(img, draw_card)
+                # text = self.reserved_cards[c][0].name  # nazwa karty zgodnie z kamieniem
+                # text_x_y = (i)  # Położenie tekstu na ekranie
+                # game_name = myfont3.render(text, True, (250, 255, 255))
+                # window.blit(game_name, text_x_y)
+                # z = 0
+                # text_bonus = str("bonus: "+str(self.reserved_cards[c][0].bonus)) # Tytył gry
+                # text_x_y = (i[0], i[1] + 25 + z * 25)  # Położenie tekstu na ekranie
+                # game_name = myfont3.render(text_bonus, True, (250, 255, 255))
+                # window.blit(game_name, text_x_y)
+                # for key, value in self.reserved_cards[c][0].stones.items():
+                #     text = str(key)+" "+str(value)  # Tytył gry
+                #
+                #     text_x_y = (i[0],i[1]+50+z*25)  # Położenie tekstu na ekranie
+                #     game_name = myfont3.render(text, True, (250, 255, 255))
+                #     window.blit(game_name, text_x_y)
+                #     z += 1
             c+=1
 
 

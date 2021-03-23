@@ -84,7 +84,7 @@ def button_coordinates(width, height, card_a_height_size, card_a_width_size, pad
     for i in range(4):
         coordinates_b_list.append((width * 0.2711 + padding_x, height-(height*0.08), card_a_width_size*1.1, card_a_height_size/2.5))  # P1 AREA
         padding_x += card_a_width_size/2 + width * 0.085
-
+        print(card_a_width_size*1.1, card_a_height_size/2.5)
     return coordinates_b_list
 
 # UZUPEŁNIANIE KART NA STOLE Z STOSU W ZALEŻNOŚCI OD POZIOMU
@@ -347,3 +347,24 @@ def check_conditions_to_change_player(selected_action, current_player, check_set
 def is_this_last_round(list_of_players, player_turn):
     if list_of_players[player_turn].points >= 15:
         return True
+
+def show_result(result, list_of_player):
+
+    for i in list_of_player:
+        if result == []:
+            result.append(i)
+        else:
+            index = 0
+            for j in result:
+                if len(result) < len(list_of_player):
+                    if i.points <= j.points:
+                        index += 1
+                    else:
+                        result.insert(index, i)
+                        break
+                if len(result) == index:
+                    result.append(i)
+                    break
+    return result
+
+
