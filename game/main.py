@@ -20,7 +20,7 @@ import random
 # INICJALIZACJA PYGAME
 pygame.init()
 
-var = True
+
 
 # INICJALIZACJA CZCIONEK
 pygame.font.init()  # Inicjalizacja czionek
@@ -128,9 +128,6 @@ while True:
         # ZDANIERZA ZWIAZANE Z PRZYCIŚNIECIEM KLAWICZA NA KLAWIATRZUE
         if event.type == pygame.KEYDOWN:
 
-            # WCIŚNIECIE KLAWISZA ENTER
-            if game_run and event.key == pygame.K_r:
-                selected_action = ''
 
 
             # WCIŚNIECIE KLAWISZA ENTER
@@ -190,11 +187,11 @@ while True:
 
         # Jeśli spełniony jest warunek to mozemy podać liczbe graczy i zapisąć ta liczbe do zmiennej
         if current_view == list_view[1]:
-            char.characters(event, 'num_of_players')
+            char.characters(event, 'num_of_players', pygame)
 
         # Jeśli spełniony jest warunek to mozemy podać imiona graczy i je zapisać
         if current_view == list_view[2]:
-            char.characters(event, 'player_names')
+            char.characters(event, 'player_names', pygame)
 
         # PRZYCIŚNIECIE I ZWOLNIENIE PRZYCISKU MYSZY SPOWODUJE DALSZE DZIAŁANIA
         if event.type == pygame.MOUSEBUTTONUP and game_run:
@@ -330,7 +327,6 @@ while True:
 
             coordinates_buttons = func.button_coordinates(width, height, card_a_height_size, card_s_width_size, padding_x)
 
-
             prepare_game_elements = False
 
 
@@ -354,7 +350,6 @@ while True:
             # WYŚWIWETLANIE PRZYCISKÓW
             db.draw_buttons(window, coordinates_buttons, width)
     # WYŚWIETLANIE STOŁU GRACZA WRAZ Z ELEMENTAMI GRY
-
 
         for i in list_of_players:
             i.draw_player_board(window)

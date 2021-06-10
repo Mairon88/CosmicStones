@@ -1,9 +1,4 @@
-import pygame
-
-word = 'gracz 1'
-num = ''
-
-def characters(event, option):
+def characters(event, option, pygame):
     global word, num
     if event.type == pygame.KEYDOWN:
         if option == 'player_names':
@@ -93,7 +88,8 @@ def characters(event, option):
             if event.key == pygame.K_4:
                 num = 4
 
-
+word = 'gracz 1'
+num = ''
 
 
 
